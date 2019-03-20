@@ -127,3 +127,12 @@ def create_message():
                                            parentMessageId=parentMessageId,
                                            status=status)
     return jsonify({"status": 201, "data": [new_mail]})
+
+@app.route('/api/v1/messages/sent', methods=['GET'])
+@authentication.user_token
+def get_sent_mail():
+    
+    """Route which fetches all mail with status sent and sender_id"""
+    token = authentication.extract_token_from_header()
+    sender_id = authentication.decode_user_token_id(token)
+    return jsonify(mail_controller.get_all_mail_sent_by_a_user(sender_id))
