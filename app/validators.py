@@ -60,3 +60,15 @@ class Validators:
 
         if password not in lst:
             return 'password field must be present'
+
+    def validate_login_keys(self, email, password, data):
+        if email not in data:
+            return "Enter email field"
+        if password not in data:
+            return "Enter password field"
+
+    def validate_login_values(self, email, password):
+        if not password:
+            return "Enter your password"
+        if not email:
+            return "Enter your email"
