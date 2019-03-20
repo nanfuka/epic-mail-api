@@ -106,7 +106,7 @@ class BaseTestCase(unittest.TestCase):
         token = self.get_token()
         self.post_a_message()
         return self.client.get(
-            'api/v1/message/sent', content_type='application/json', headers=dict(Authorization='Bearer ' + token
+            'api/v1/messages/sent', content_type='application/json', headers=dict(Authorization='Bearer ' + token
                                                                                  )
         )
 
