@@ -10,14 +10,19 @@ class Test_registration(BaseTestCase):
         with self.client:
             response = self.login_user("deb@gmal.com", "secret")
             self.assertEqual(response.status_code, 200)
-
         
     def test_login_before_signup(self):
         """
         Test login with unregistered user credentials
         """
         with self.client:
-            response = self.client.post('api/v1/login', data=json.dumps(dict(email="chloe@gmail.com",password="password")),content_type='application/json')
+            response = self.client.post(
+                'api/v1/auth/login', 
+                data=json.dumps(
+                    dict(
+                        email="chloe@gmail.com",
+                        password="password")),
+                        content_type='application/json')
         
             self.assertEqual(response.status_code, 200)
                      
@@ -29,7 +34,11 @@ class Test_registration(BaseTestCase):
         Test login without email key value
         """
         with self.client:
-            response = self.client.post('api/v1/login', data=json.dumps(dict(password="password")),content_type='application/json')
+            response = self.client.post(
+                'api/v1/auth/login', 
+                data=json.dumps(dict(
+                                    password="password")),
+                                    content_type='application/json')
         
             self.assertEqual(response.status_code, 200)
                      
@@ -41,7 +50,10 @@ class Test_registration(BaseTestCase):
         Test login without email key value
         """
         with self.client:
-            response = self.client.post('api/v1/login', data=json.dumps(dict(email="chloe@gmail.com")),content_type='application/json')
+            response = self.client.post('api/v1/auth/login',
+                                        data=json.dumps(dict(
+                                            email="chloe@gmail.com")),
+                                                content_type='application/json')
         
             self.assertEqual(response.status_code, 200)
                      

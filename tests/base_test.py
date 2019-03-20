@@ -63,3 +63,61 @@ class BaseTestCase(unittest.TestCase):
         data = json.loads(response.data)
         return data['data'][0]['token']
 
+    def post_a_message(self,
+
+                       subject="graduation ceremony",
+                       message="invitation to attend my graduation",
+                       parentMessageId=1,
+                       status="sent",
+                       sender_id=1,
+                       reciever_id=1
+                       ):
+        token = self.get_token()
+        """
+        Method for registering a user with dummy data
+        """
+    #     return self.client.get('/', content_type = 'application/json', headers=dict(Authorization='Bearer ' + token))
+
+        return self.client.post(
+            'api/v1/message',
+            data=json.dumps(dict(
+                            subject=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+              
+                            )
+                            ), content_type='application/json',
+                               headers=dict(Authorization='Bearer ' + token)
+                        )
+    # def get_all_recieved_mail(self, email="kals@gm.com", password="asddfsd"):
+
+    def get_all_recieved_mail(self):
+        token = self.get_token()
+        self.post_a_message()
+        return self.client.get(
+            'api/v1/messages', content_type='application/json', headers=dict(Authorization='Bearer ' + token
+                                                                             )
+        )
+
+    def view_sent_messages(self):
+        token = self.get_token()
+        self.post_a_message()
+        return self.client.get(
+            'api/v1/message/sent', content_type='application/json', headers=dict(Authorization='Bearer ' + token
+                                                                                 )
+        )
+
+    def retrieve_a_message(self):
+        self.post_a_message()
+        return self.client.get(
+            'api/v1/message/1'
+        )
+
+    def delete_a_particular_message(self):
+        self.post_a_message()
+        return self.client.delete(
+            '/api/v1/message/deleted/1'
+        )
