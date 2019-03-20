@@ -62,3 +62,4 @@ class BaseTestCase(unittest.TestCase):
         response = self.login_user(email, password)
         data = json.loads(response.data)
         return data['data'][0]['token']
+
