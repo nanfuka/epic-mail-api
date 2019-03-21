@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/nanfuka/epic-mail-api.svg?branch=integrations)](https://travis-ci.org/nanfuka/epic-mail-api)[![Coverage Status](https://coveralls.io/repos/github/nanfuka/epic-mail-api/badge.svg?branch=integrations)](https://coveralls.io/github/nanfuka/epic-mail-api?branch=develop)
+[![Build Status](https://travis-ci.org/nanfuka/epic-mail-api.svg?branch=integrations)](https://travis-ci.org/nanfuka/epic-mail-api)[![Coverage Status](https://coveralls.io/repos/github/nanfuka/epic-mail-api/badge.svg?branch=integrations)](https://coveralls.io/github/nanfuka/epic-mail-api?branch=develop)[![Maintainability](https://api.codeclimate.com/v1/badges/c85e352aaab6c22647fa/maintainability)](https://codeclimate.com/github/nanfuka/epic-mail-api/maintainability)
 
 # Epic-Mail
 
