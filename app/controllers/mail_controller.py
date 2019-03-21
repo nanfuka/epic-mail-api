@@ -6,8 +6,6 @@ authentication = Authentication()
 
 
 class Mail_controller:
-    # unread_messages = []
-    # recieved_messages = []
     def create_mail(self, **kwargs):
         """function for creating a new message"""
         mail = Mail(**kwargs)
@@ -19,7 +17,6 @@ class Mail_controller:
                 "message": new_mail['message'],
                 "parentMessageId": new_mail['parentMessageId'],
                 "status": new_mail['status']}
-    # def send_mail(self, sender_id, message_id, createdon):
 
     def get_all_recieved_messages_of_a_user(self, reciever_id):
         """Function to retrieve all messages with a particular user_id as the reciever_id and a status of read """
@@ -34,9 +31,13 @@ class Mail_controller:
                 
         if recieved_mail:
             return {'status': 200, "data": recieved_mail}
-        return {"status": 200, "message": "there is no recieved mail to the current reciever_id yet"}
+        return {
+                "status": 200, 
+                "message":
+                "there is no recieved mail to the current reciever_id yet"}
         if not mail_list:
-            return {"status": 200, "message": "There isn't any mail in the inbox"}
+            return {"status": 200,
+                    "message": "There isn't any mail in the inbox"}
 
     def get_all_unread_mail_for_a_user(self, reciever_id):
         """Function to retrieve all messages with a particular user_id and a status of sent"""
@@ -102,3 +103,5 @@ class Mail_controller:
         return self.client.get(
             'api/v1/message/1'
         )
+
+    

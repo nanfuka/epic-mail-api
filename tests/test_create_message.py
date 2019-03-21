@@ -18,7 +18,27 @@ class Test_messages(BaseTestCase):
             self.assertEqual(data['data'][0]['message'], 'can you shift it') 
             self.assertEqual(data['data'][0]['parentMessageId'], 1)  
             self.assertEqual(data['data'][0]['status'], 'draft')  
-            
+
+    def test_post_a_message_without_token(self):
+        """
+        Test a user is successfully created through the api
+        """
+        with self.client:
+            response = self.post_a_message_without_token("bookstore", "can you shift it",1,"draft",  1, 1)
+            self.assertEqual(response.status_code, 401)
+            data = json.loads(response.data)
+            self.assertEqual(data['message'], 'Token does not exist')  
+
+    def test_post_a_message_with_invalid_token(self):
+        """
+        Test a user is successfully created through the api
+        """
+        with self.client:
+            response = self.post_a_message_with_invalid_token("bookstore", "can you shift it",1,"draft",  1, 1)
+            self.assertEqual(response.status_code, 401)
+            data = json.loads(response.data)
+            self.assertEqual(data['message'], 'Token Decode Failed!') 
+
     def test_post_a_message_without_subject(self):
         """
         Test post amessage without a subject
@@ -30,7 +50,6 @@ class Test_messages(BaseTestCase):
             self.assertEqual(data['error'], 'please enter the subject of your message')  
             self.assertEqual(data['status'], 400)  
          
-
     def test_post_a_message_without_message(self):
         """
         Test post amessage without a subject

@@ -1,4 +1,4 @@
-# from flask_testing import TestCase
+
 from app.views.views import app
 import unittest
 import json
@@ -92,7 +92,66 @@ class BaseTestCase(unittest.TestCase):
                             ), content_type='application/json',
                                headers=dict(Authorization='Bearer ' + token)
                         )
-    # def get_all_recieved_mail(self, email="kals@gm.com", password="asddfsd"):
+
+    def post_a_message_with_invalid_token(self,
+
+                       subject="graduation ceremony",
+                       message="invitation to attend my graduation",
+                       parentMessageId=1,
+                       status="sent",
+                       sender_id=1,
+                       reciever_id=1
+                       ):
+        token = "wrongtoken"
+        """
+        Method for registering a user with dummy data
+        """
+    #     return self.client.get('/', content_type = 'application/json', headers=dict(Authorization='Bearer ' + token))
+
+        return self.client.post(
+            'api/v1/message',
+            data=json.dumps(dict(
+                            subject=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+              
+                            )
+                            ), content_type='application/json',
+                               headers=dict(Authorization='Bearer ' + token)
+                        )
+
+    def post_a_message_without_token(
+        self,
+
+        subject="graduation ceremony",
+        message="invitation to attend my graduation",
+        parentMessageId=1,
+        status="sent",
+        sender_id=1,
+        reciever_id=1
+         ):
+        # token = self.get_token()
+        """
+        Method for registering a user with dummy data
+        """
+
+        return self.client.post(
+            'api/v1/message',
+            data=json.dumps(dict(
+                            subject=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+              
+                            )
+                            ), content_type='application/json'
+                               
+                        )
 
     def get_all_recieved_mail(self):
         token = self.get_token()

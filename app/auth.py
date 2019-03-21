@@ -14,13 +14,13 @@ class Authentication:
                            "mylovelydaughters")
         return token.decode('utf-8')
 
-    def create_admin_token(self, user_id):
-        """function which creates teh admins token"""
+    # def create_admin_token(self, user_id):
+    #     """function which creates teh admins token"""
 
-        token = jwt.encode({'user_id': user_id, "isAdmin": "true",
-                            'exp': datetime.datetime.utcnow(
-                             ) + datetime.timedelta(minutes=30)}, "amanadmin")
-        return token.decode('utf-8')
+    #     token = jwt.encode({'user_id': user_id, "isAdmin": "true",
+    #                         'exp': datetime.datetime.utcnow(
+    #                          ) + datetime.timedelta(minutes=30)}, "amanadmin")
+    #     return token.decode('utf-8')
 
     def user_token(self, f):
         """function for creating a user token decorator"""
@@ -49,11 +49,7 @@ class Authentication:
                     'message': 'Expired token. Please Log In again.',
                     'authenticated': False
                 }), 401
-            except jwt.InvalidTokenError:
-                error = jsonify({
-                    'message': 'Invalid token. Please Log In again',
-                    'authenticated': False
-                }), 401
+
             return error
 
         return _verify
