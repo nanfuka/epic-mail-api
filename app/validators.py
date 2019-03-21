@@ -43,30 +43,30 @@ class Validators:
         if user_controller.get_login_email(email):
             return "the email you have chosen is already in use"
 
-    def validate_signup_keys(self, *args):
-        """function to validate all the message keys"""
-        firstname = args[0]
-        lastname = args[1]
-        email = args[2]
-        password = args[3]
-        lst = args[4]
-        if firstname not in lst:
-            return 'firstname field must be present'
+    # def validate_signup_keys(self, *args):
+    #     """function to validate all the message keys"""
+    #     firstname = args[0]
+    #     lastname = args[1]
+    #     email = args[2]
+    #     password = args[3]
+    #     lst = args[4]
+    #     if firstname not in lst:
+    #         return 'firstname field must be present'
 
-        if lastname not in lst:
-            return 'lastname field must be present'
+    #     if lastname not in lst:
+    #         return 'lastname field must be present'
 
-        if email not in lst:
-            return 'email field must be present'
+    #     if email not in lst:
+    #         return 'email field must be present'
 
-        if password not in lst:
-            return 'password field must be present'
+    #     if password not in lst:
+    #         return 'password field must be present'
 
-    def validate_login_keys(self, email, password, data):
-        if email not in data:
-            return "Enter email field"
-        if password not in data:
-            return "Enter password field"
+    # def validate_login_keys(self, email, password, data):
+    #     if email not in data:
+    #         return "Enter email field"
+    #     if password not in data:
+    #         return "Enter password field"
 
     def validate_login_values(self, email, password):
         if not password:

@@ -58,42 +58,6 @@ class Authentication:
 
         return _verify
 
-    def admin_token(self, f):
-        """function for creating the admin token decorator"""
-        @wraps(f)
-        def _verify(*args, **kwargs):
-            auth_headers = request.headers.get('Authorization', '').split()
-            try:
-                token = auth_headers[1]
-                print(token)
-                if not token:
-                    error = jsonify({'message': 'Token is missing'}), 403
-                data = jwt.decode(token, "amanadmin")
-                return f(*args, **kwargs)
-            except IndexError:
-                error = jsonify({
-                    "message": "Token does not exist",
-                    "authenticated": False
-                }), 401
-            except jwt.DecodeError:
-                error = jsonify({
-                    "message": "Token Decode Failed!",
-                    "authenticated": False
-                }), 401
-            except jwt.ExpiredSignatureError:
-                error = jsonify({
-                    'message': 'Expired token. Please Log In again.',
-                    'authenticated': False
-                }), 401
-            except jwt.InvalidTokenError:
-                error = jsonify({
-                    'message': 'Invalid token. Please Log In again',
-                    'authenticated': False
-                }), 401
-            return error
-
-        return _verify
-
     def extract_token_from_header(self):
         """Method for extracting the token from header"""
         """Get token from the headers"""

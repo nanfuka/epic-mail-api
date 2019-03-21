@@ -54,8 +54,8 @@ class User_controllers:
                 id = user['id']
                 return id
 
-    def validate_login_keys(self, email, password, data):
-        if email not in data:
-            return "Enter email field"
-        if password not in data:
-            return "Enter password field"
+    # def validate_login_keys(self, email, password, data):
+    #     if email not in data:
+    #         return "Enter email field"
+    #     if password not in data:
+    #         return "Enter password field"
