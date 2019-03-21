@@ -84,12 +84,19 @@ def login():
         return jsonify(login)
 
 
+def get_id_from_header():
+    token = authentication.extract_token_from_header()
+    senderid = authentication.decode_user_token_id(token)
+    return senderid
+
+
 @app.route('/api/v1/message', methods=['POST'])
 @authentication.user_token
 def create_message():
     """The loggedin user can create a new email using this route"""
-    token = authentication.extract_token_from_header()
-    senderid = authentication.decode_user_token_id(token)
+    # token = authentication.extract_token_from_header()
+    # senderid = authentication.decode_user_token_id(token)
+    senderid = get_id_from_header()
     data = request.get_json()
     validate = validators.validate_message_keys('subject',
                                                 'message',
@@ -141,8 +148,9 @@ def get_sent_mail():
 @authentication.user_token
 def get_recieved_mail():
     """reciever can view all mail sent to them marked sent with a recieverid of logged in user"""
-    token = authentication.extract_token_from_header()
-    reciever_id = authentication.decode_user_token_id(token)
+    # token = authentication.extract_token_from_header()
+    # reciever_id = authentication.decode_user_token_id(token)
+    reciever_id = get_id_from_header()
     return jsonify(mail_controller.get_all_recieved_messages_of_a_user(reciever_id))
 
 @app.route('/api/v1/messages/unread', methods=['GET'])
@@ -152,8 +160,9 @@ def get_unread_mail():
     """
     view all messages whose status is sent to a particular reciever-id
     """
-    token = authentication.extract_token_from_header()
-    reciever_id = authentication.decode_user_token_id(token)
+    # token = authentication.extract_token_from_header()
+    # reciever_id = authentication.decode_user_token_id(token)
+    reciever_id = get_id_from_header()
     return jsonify(mail_controller.get_all_unread_mail_for_a_user(reciever_id))
 
 @app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
