@@ -42,7 +42,7 @@ class Mail_controller:
         """Function to retrieve all messages with a particular user_id and a status of sent"""
         unread = []
         for mail in mail_list:
-            if mail['status'] != "read" and mail['reciever_id'] == reciever_id:
+            if mail['status'] == "sent" and mail['reciever_id'] == reciever_id:
                 unread.append(mail)
 
         if unread:
@@ -96,3 +96,9 @@ class Mail_controller:
                 return {"message": "email successfully deleted from the system"}
         if not mail_list:
             return {"status": 200, "message": "There isn't any mail in the inbox"}
+
+    def retrieve_a_message(self):
+        self.post_a_message()
+        return self.client.get(
+            'api/v1/message/1'
+        )
