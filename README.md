@@ -39,18 +39,19 @@ Running the application
 Use the following command in the project folder to run the app:
 
 python run.py
-End points
-HTTP method	End point	Functionality
-GET	/	A welcome route to the application or index
-GET	/api/v1/messages	Return all recieved messages
-GET	/api/v1/messages/unread	Return all recieved but unread messages
-GET	/api/v1/messages/sent	Return all sent messages
-GET	/api/v1/messages/int:message_id	Get a specific email-record
-POST	/api/v1/messages	Create a new message
-POST	/api/v1/auth/signup	Register a new user
-POST	/api/v1/auth/signin	Login a user 
-DELETE	/api/v1/messages/int:message_id	Delete specific email-record 
-Sample Data to use in postman
+#API End points for the application
+|HTTP method|	End point|	Functionality|
+|GET|	/|	A welcome route to the application or index|
+|GET|	/api/v1/messages|	Return all recieved messages|
+|GET|	/api/v1/messages/unread	|Return all recieved but unread messages|
+|GET|	/api/v1/messages/sent|	Return all sent messages|
+|GET|	/api/v1/messages/int:message_id|	Get a specific email-record|
+|POST|	/api/v1/messages|	Create a new message|
+|POST|	/api/v1/auth/signup|	Register a new user|
+|POST|	/api/v1/auth/signin|	Login a user |
+|DELETE|	/api/v1/messages/int:message_id|	Delete specific email-record |
+
+#Sample Data to use in postman
 Registering a user.
 {
 	"firstname": "deb",
@@ -118,23 +119,25 @@ Sample output after creating a message
     ],
     "status": 201
 }
-Adding Token to headers using Postman
-In Postman, select an API method.
-Click the Authorization tab.
-Choose OAuth 2.0 or Bearer Token.
-Copy the token above and paste it in the edit text box provided on the right hand side.
-Built with
-Flask - Micro web framework for Python
-PIP - A python package installer
-Tools Used
-Pivotal Tracker used to write user stories for this project
-Visual Studio acting as an editor for the project files
-Github
-Postman used to test the api end points
-Deployment
-The link to Heroku where the api is deployed can be found [here](https://epicd.herokuapp.com/)
+# Adding Token to headers using Postman
+- In Postman, select an API method.
+- Click the Authorization tab.
+- Choose OAuth 2.0 or Bearer Token.
+- Copy the token above and paste it in the edit text box provided on the right hand side.
+- Built with
+- Flask - Micro web framework for Python
+- PIP - A python package installer
 
-To access other routes append the api end points stated above to the home route.
+#Tools Used
+- Pivotal Tracker used to write user stories for this project
+- Visual Studio acting as an editor for the project files
+- Github
+- Postman used to test the api end points
 
-Authors
+#Deployment
+- The link to Heroku where the api is deployed can be found [here](https://epicd.herokuapp.com/)
+
+- To access other routes append the api end points stated above to the home route.
+
+# Authors
 Deborah Kalungi
