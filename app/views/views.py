@@ -161,6 +161,11 @@ def get_particular_mail(message_id):
     """Route for retrieving a particular mail"""
     return jsonify(mail_controller.get_specific_users_email(message_id))
 
+@app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
+def delete_particular_mail(message_id):
+    """Route for deleting a particular mail"""
+    return jsonify(mail_controller.delete_specific_users_email(message_id))
+
 
 
 
