@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/nanfuka/epic-mail-api.svg?branch=integrations)](https://travis-ci.org/nanfuka/epic-mail-api)[![Coverage Status](https://coveralls.io/repos/github/nanfuka/epic-mail-api/badge.svg?branch=master)](https://coveralls.io/github/nanfuka/epic-mail-api?branch=develop)
-## Epic-Mail
+[![Build Status](https://travis-ci.org/nanfuka/epic-mail-api.svg?branch=integrations)](https://travis-ci.org/nanfuka/epic-mail-api)[![Coverage Status](https://coveralls.io/repos/github/nanfuka/epic-mail-api/badge.svg?branch=integrations)](https://coveralls.io/github/nanfuka/epic-mail-api?branch=develop)
+
+# Epic-Mail
 
 # Description
 
@@ -7,21 +8,19 @@ The internet is increasingly becoming an integral part of lives. Ever since the 
 
 In order to close this gap, Epic-Mail application has been developed to facilitate the exchange messages/information over the internet.
 
-Getting Started
+## Getting Started
 Follow these instructions to get a copy of the API to run on your machine.
 
-Prerequisites
+## Prerequisites
 Install the following programs before using the API:
 
 1. Python version 3.7.1
 2. Postman
-## Instructions for set up
+### Instructions for set up
 - Clone into this repo using:
-- Clone into this repo using:
-- git clone 
+- git clone https://github.com/nanfuka/epic-mail-api.git
 - Set up a virtual environment for python in the project directory
 - Inorder to set up the virtual environment, you need to install the python package called virtualenv using pip. Run the command below to install it.
-
 - pip install virtualenv to install virtualenv
 - virtualenv virtual to create a virtual environment named virtual
 - virtual/Scripts/activate to activate your virtual environment.
@@ -29,8 +28,8 @@ Install the following programs before using the API:
 
 After setting up and activating your virtual environment, install all the packages required by the project by running the code below.
 
-pip install -r requirements.txt
-Running the tests
+- pip install -r requirements.txt
+- Running the tests
 Use the following command to run the tests in your virtual environment:
 
 pytest -v
@@ -42,7 +41,7 @@ python run.py
 ## API End points for the application
 |HTTP method|	End point|	Functionality|
 |---|---|---|
-| GET |  `api/v1/red-flags` | Fetch all ​red-flag ​​records |
+
 | GET |	`/`| A welcome route to the application or index |
 |GET | `api/v1/messages` |	Return all recieved messages |
 |GET |	`api/v1/messages/unread` | Return all recieved but unread messages |
@@ -54,7 +53,7 @@ python run.py
 |DELETE | `api/v1/messages/int:message_id` |	Delete specific email-record |
 
 ## Sample Data to use in postman
-# Registering a user.
+### Registering a user.
 {
 	"firstname": "deb",
 	"lastname": "kalungi",	
@@ -62,12 +61,12 @@ python run.py
 	"password": "Password"
 }
 
-# User Log In.
+### User Log In.
 {
 	"email": "kals@gmail.com",
 	"password": "Password",
 }
-# Creating a message
+### Creating a message
 {"subject": "bnbjhb",
     "message":"1",
     "parentMessageId":1,
@@ -76,7 +75,7 @@ python run.py
     "reciever_id":1
     }
 
-# Sample output after user signup
+### Sample output after user signup
 {
     "data": [
         {
@@ -90,7 +89,7 @@ python run.py
     "status": 201
 }
 
-# Sample output after user signin
+### Sample output after user signin
 {
     "data": [
         {
@@ -100,7 +99,7 @@ python run.py
     "message": "you have successfully logged in as a user"
 }
 
-# Sample output after creating a message
+### Sample output after creating a message
 {
     "data": [
         {
