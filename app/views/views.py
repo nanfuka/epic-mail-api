@@ -132,7 +132,33 @@ def create_message():
 @authentication.user_token
 def get_sent_mail():
     
-    """Route which fetches all mail with status sent and sender_id"""
+    """Route which fetches all mail sent by the current user"""
     token = authentication.extract_token_from_header()
     sender_id = authentication.decode_user_token_id(token)
     return jsonify(mail_controller.get_all_mail_sent_by_a_user(sender_id))
+
+@app.route('/api/v1/messages', methods=['GET'])
+@authentication.user_token
+def get_recieved_mail():
+    """reciever can view all mail sent to them marked sent with a recieverid of logged in user"""
+    token = authentication.extract_token_from_header()
+    reciever_id = authentication.decode_user_token_id(token)
+    return jsonify(mail_controller.get_all_recieved_messages_of_a_user(reciever_id))
+
+@app.route('/api/v1/messages/unread', methods=['GET'])
+@authentication.user_token
+def get_unread_mail():
+
+    """
+    view all messages whose status is sent to a particular reciever-id
+    """
+    token = authentication.extract_token_from_header()
+    reciever_id = authentication.decode_user_token_id(token)
+    return jsonify(mail_controller.get_all_unread_mail_for_a_user(reciever_id))
+
+
+
+
+
+
+

@@ -29,6 +29,9 @@ class Mail_controller:
             if mail['status'] == "read" and mail['reciever_id'] == reciever_id:
                 recieved_mail.append(mail)
 
+            if mail['status'] == "sent" and mail['reciever_id'] == reciever_id:
+                recieved_mail.append(mail)
+                
         if recieved_mail:
             return {'status': 200, "data": recieved_mail}
         return {"status": 200, "message": "there is no recieved mail to the current reciever_id yet"}
