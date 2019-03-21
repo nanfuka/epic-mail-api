@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/nanfuka/epic-mail-api.svg?branch=integrations)](https://travis-ci.org/nanfuka/epic-mail-api)
+[![Build Status](https://travis-ci.org/nanfuka/epic-mail-api.svg?branch=integrations)](https://travis-ci.org/nanfuka/epic-mail-api)[![Coverage Status](https://coveralls.io/repos/github/nanfuka/epic-mail-api/badge.svg?branch=master)](https://coveralls.io/github/nanfuka/epic-mail-api?branch=develop)
 ## Epic-Mail
 
 # Description
@@ -15,16 +15,16 @@ Install the following programs before using the API:
 
 1. Python version 3.7.1
 2. Postman
-Instructions for set up
-Clone into this repo using:
-Clone into this repo using:
-git clone 
-Set up a virtual environment for python in the project directory
-Inorder to set up the virtual environment, you need to install the python package called virtualenv using pip. Run the command below to install it.
+## Instructions for set up
+- Clone into this repo using:
+- Clone into this repo using:
+- git clone 
+- Set up a virtual environment for python in the project directory
+- Inorder to set up the virtual environment, you need to install the python package called virtualenv using pip. Run the command below to install it.
 
-pip install virtualenv to install virtualenv
-virtualenv virtual to create a virtual environment named virtual
-virtual/Scripts/activate to activate your virtual environment.
+- pip install virtualenv to install virtualenv
+- virtualenv virtual to create a virtual environment named virtual
+- virtual/Scripts/activate to activate your virtual environment.
 
 
 After setting up and activating your virtual environment, install all the packages required by the project by running the code below.
@@ -39,21 +39,22 @@ Running the application
 Use the following command in the project folder to run the app:
 
 python run.py
-##API End points for the application
+## API End points for the application
 |HTTP method|	End point|	Functionality|
 |---|---|---|
-|GET|	/|	A welcome route to the application or index|
-|GET|	/api/v1/messages|	Return all recieved messages|
-|GET|	/api/v1/messages/unread	|Return all recieved but unread messages|
-|GET|	/api/v1/messages/sent|	Return all sent messages|
-|GET|	/api/v1/messages/int:message_id|	Get a specific email-record|
-|POST|	/api/v1/messages|	Create a new message|
-|POST|	/api/v1/auth/signup|	Register a new user|
-|POST|	/api/v1/auth/signin|	Login a user |
-|DELETE|	/api/v1/messages/int:message_id|	Delete specific email-record |
+| GET |  `api/v1/red-flags` | Fetch all ​red-flag ​​records |
+| GET |	`/`| A welcome route to the application or index |
+|GET | `api/v1/messages` |	Return all recieved messages |
+|GET |	`api/v1/messages/unread` | Return all recieved but unread messages |
+|GET | `api/v1/messages/sent` |	Return all sent messages |
+|GET |	`api/v1/messages/int:message_id`|	Get a specific email-record |
+|POST |	`api/v1/messages`|	Create a new message |
+|POST |	`api/v1/auth/signup` |	Register a new user |
+|POST |	`api/v1/auth/signin` |	Login a user |
+|DELETE | `api/v1/messages/int:message_id` |	Delete specific email-record |
 
-##Sample Data to use in postman
-Registering a user.
+## Sample Data to use in postman
+# Registering a user.
 {
 	"firstname": "deb",
 	"lastname": "kalungi",	
@@ -61,21 +62,21 @@ Registering a user.
 	"password": "Password"
 }
 
-User Log In.
+# User Log In.
 {
 	"email": "kals@gmail.com",
 	"password": "Password",
 }
+# Creating a message
+{"subject": "bnbjhb",
+    "message":"1",
+    "parentMessageId":1,
+    "status":"sent",
+    "sender_id":1,
+    "reciever_id":1
+    }
 
-Creating a message
-{
-	"comment": "New comment about corruption",
-	"_type": "red-flag",
-	"images": "image.jpg",
-	"location": "Lat 11231 Long 14224",
-	"videos": "vid.mp4"
-}
-Sample output after user signup
+# Sample output after user signup
 {
     "data": [
         {
@@ -89,7 +90,7 @@ Sample output after user signup
     "status": 201
 }
 
-Sample output after user sign in
+# Sample output after user signin
 {
     "data": [
         {
@@ -98,15 +99,8 @@ Sample output after user sign in
     ],
     "message": "you have successfully logged in as a user"
 }
-Posting a message
-{"subject": "bnbjhb",
-    "message":"1",
-    "parentMessageId":1,
-    "status":"sent",
-    "sender_id":1,
-    "reciever_id":1
-    }
-Sample output after creating a message
+
+# Sample output after creating a message
 {
     "data": [
         {
@@ -129,13 +123,13 @@ Sample output after creating a message
 - Flask - Micro web framework for Python
 - PIP - A python package installer
 
-##Tools Used
+## Tools Used
 - Pivotal Tracker used to write user stories for this project
 - Visual Studio acting as an editor for the project files
 - Github
 - Postman used to test the api end points
 
-##Deployment
+## Deployment
 - The link to Heroku where the api is deployed can be found [here](https://epicd.herokuapp.com/)
 
 - To access other routes append the api end points stated above to the home route.
