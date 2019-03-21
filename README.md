@@ -41,7 +41,6 @@ python run.py
 ## API End points for the application
 |HTTP method|	End point|	Functionality|
 |---|---|---|
-
 | GET |	`/`| A welcome route to the application or index |
 |GET | `api/v1/messages` |	Return all recieved messages |
 |GET |	`api/v1/messages/unread` | Return all recieved but unread messages |
