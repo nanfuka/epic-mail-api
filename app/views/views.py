@@ -156,6 +156,11 @@ def get_unread_mail():
     reciever_id = authentication.decode_user_token_id(token)
     return jsonify(mail_controller.get_all_unread_mail_for_a_user(reciever_id))
 
+@app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
+def get_particular_mail(message_id):
+    """Route for retrieving a particular mail"""
+    return jsonify(mail_controller.get_specific_users_email(message_id))
+
 
 
 
