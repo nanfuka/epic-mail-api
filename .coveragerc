@@ -1,0 +1,6 @@
+[report]
+omit = */home/travis/virtualenv/*
+        */tests/*
+        */api/__init__.py
+        */venv/*
+        */__init__/*
