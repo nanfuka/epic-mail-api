@@ -87,21 +87,21 @@ class BaseTestCase(unittest.TestCase):
                             status=status,
                             sender_id=sender_id,
                             reciever_id=reciever_id
-              
+
                             )
                             ), content_type='application/json',
-                               headers=dict(Authorization='Bearer ' + token)
-                        )
+            headers=dict(Authorization='Bearer ' + token)
+        )
 
     def post_a_message_with_invalid_token(self,
 
-                       subject="graduation ceremony",
-                       message="invitation to attend my graduation",
-                       parentMessageId=1,
-                       status="sent",
-                       sender_id=1,
-                       reciever_id=1
-                       ):
+                                          subject="graduation ceremony",
+                                          message="invitation to attend my graduation",
+                                          parentMessageId=1,
+                                          status="sent",
+                                          sender_id=1,
+                                          reciever_id=1
+                                          ):
         token = "wrongtoken"
         """
         Method for registering a user with dummy data
@@ -117,11 +117,11 @@ class BaseTestCase(unittest.TestCase):
                             status=status,
                             sender_id=sender_id,
                             reciever_id=reciever_id
-              
+
                             )
                             ), content_type='application/json',
-                               headers=dict(Authorization='Bearer ' + token)
-                        )
+            headers=dict(Authorization='Bearer ' + token)
+        )
 
     def post_a_message_without_token(
         self,
@@ -132,7 +132,7 @@ class BaseTestCase(unittest.TestCase):
         status="sent",
         sender_id=1,
         reciever_id=1
-         ):
+    ):
         # token = self.get_token()
         """
         Method for registering a user with dummy data
@@ -147,11 +147,11 @@ class BaseTestCase(unittest.TestCase):
                             status=status,
                             sender_id=sender_id,
                             reciever_id=reciever_id
-              
+
                             )
                             ), content_type='application/json'
-                               
-                        )
+
+        )
 
     def get_all_recieved_mail(self):
         token = self.get_token()
@@ -161,22 +161,64 @@ class BaseTestCase(unittest.TestCase):
                                                                              )
         )
 
+    def get_all_recieved_mail_without_token(self):
+
+        self.post_a_message()
+        return self.client.get(
+            'api/v1/messages', content_type='application/json')
+
+    def get_all_recieved_mail_with_invalid_token(self):
+        token = "extreemly invalid"
+        self.post_a_message()
+        return self.client.get(
+            'api/v1/messages', content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token
+                         )
+        )
+
+
+    def get_all_recieved_mail_with_empty_inbox(self):
+        token = self.get_token()
+
+        return self.client.get(
+            'api/v1/messages', content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token
+                         )
+        )
+
     def view_sent_messages(self):
         token = self.get_token()
         self.post_a_message()
         return self.client.get(
             'api/v1/messages/sent', content_type='application/json', headers=dict(Authorization='Bearer ' + token
-                                                                                 )
+                                                                                  )
         )
 
     def retrieve_a_message(self):
         self.post_a_message()
         return self.client.get(
-            'api/v1/message/1'
+            'api/v1/messages/1'
         )
 
     def delete_a_particular_message(self):
         self.post_a_message()
         return self.client.delete(
-            '/api/v1/message/deleted/1'
+            '/api/v1/messages/deleted/2'
+        )
+
+    def get_all_unread_messages(self):
+        token = self.get_token()
+        self.post_a_message()
+        return self.client.get(
+            '/api/v1/messages/unread', content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+
+        )
+
+    def get_all_unread_messages_with_no_token(self):
+        
+        self.post_a_message()
+        return self.client.get(
+            '/api/v1/messages/unread', content_type='application/json'
+
         )

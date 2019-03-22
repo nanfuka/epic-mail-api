@@ -92,7 +92,7 @@ class Mail_controller:
         for message in mail_list:
             if len(mail_list) < 1:
                 return {"message": "there are currently no emails"}
-            if message['id'] == message_id:
+            if message['id'] == mail_id:
                 mail_list.remove(message)
                 return {"message": "email successfully deleted from the system"}
         if not mail_list:
