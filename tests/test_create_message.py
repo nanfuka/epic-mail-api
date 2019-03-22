@@ -17,7 +17,31 @@ class Test_messages(BaseTestCase):
             self.assertEqual(data['data'][0]['subject'], "bookstore")  
             self.assertEqual(data['data'][0]['message'], 'can you shift it') 
             self.assertEqual(data['data'][0]['parentMessageId'], 1)  
-            self.assertEqual(data['data'][0]['status'], 'draft')  
+            self.assertEqual(data['data'][0]['status'], 'draft') 
+
+    def test_post_a_message_with_very_short_subject(self):
+        """
+        Test a user is successfully created through the api
+        """
+        with self.client:
+            response = self.post_a_message("df", "can you shift it",1,"draft",  1, 1)
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertEqual(data['status'], 400) 
+            self.assertEqual(data['error'], ' the subject of the mail is too short')  
+
+    def test_post_a_message_with_very_long_subject(self):
+        """
+        Test a user is successfully created through the api
+        """
+        with self.client:
+            response = self.post_a_message("ddsffffffffffffffffffffffffffffffffffffssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssf", "can you shift it",1,"draft",  1, 1)
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertEqual(data['status'], 400) 
+            self.assertEqual(data['error'], " the subject line is too long, write your message in the message box")          
+
+
 
     def test_post_a_message_without_token(self):
         """

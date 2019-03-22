@@ -103,5 +103,7 @@ class Mail_controller:
         return self.client.get(
             'api/v1/message/1'
         )
-
-    
+    # def append_to_mail(self)
+    #     for mail in mail_list:
+    #         if mail['status'] == "sent" and mail['sender_id'] == sender_id:
+    #             sent.append(mail)   

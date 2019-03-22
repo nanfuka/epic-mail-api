@@ -94,8 +94,6 @@ def get_id_from_header():
 @authentication.user_token
 def create_message():
     """The loggedin user can create a new email using this route"""
-    # token = authentication.extract_token_from_header()
-    # senderid = authentication.decode_user_token_id(token)
     senderid = get_id_from_header()
     data = request.get_json()
     validate = validators.validate_message_keys('subject',

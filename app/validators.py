@@ -14,14 +14,19 @@ class Validators:
 
         if not firstname.isalpha():
             return "firstname should only be made up of letters"
-        if len(lastname) < 3 and len(lastname) > 3:
-            return "invalid lastname. its too short"
 
-        if len(firstname) < 3 and len(firstname) > 1:
-            return "invalid firstname. its too short"
-
+            
         if not lastname or lastname.strip() == "":
             return "please enter the lastname"
+        if len(lastname) < 3:
+            return "invalid lastname. its too short"
+        if len(firstname) < 3:
+            return "invalid firstname. its too short"
+
+        # if len(firstname) < 3 and len(firstname) > 1:
+        #     return "invalid firstname. its too short"
+
+
         if not lastname.isalpha():
             return "lastname should only be made up of letters"
 
@@ -83,8 +88,7 @@ class Validators:
         if len(subject) < 5:
             return " the subject of the mail is too short"
         if len(subject) > 100:
-            return " the subject line is too long,\
-                write your message in the message box"
+            return " the subject line is too long, write your message in the message box"
         if status != "sent" and status != "read" and status != "draft":
             return "status should either be sent, read or draft"
 
