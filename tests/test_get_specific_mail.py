@@ -21,12 +21,12 @@ class Test_messages(BaseTestCase):
             self.assertEqual(data['data']['sender_id'], 1)
             self.assertEqual(data['data']['reciever_id'], 1)
 
-    # def test_get_recieved_messages_without_token(self):
-    #     """
-    #     Test a user is successfully created through the api
-    #     """
-    #     with self.client:
-    #         response = self.get_all_unread_messages_with_no_token()
-    #         self.assertEqual(response.status_code, 401)
-    #         data = json.loads(response.data)
-    #         self.assertEqual(data['message'], 'Token does not exist')
+    def test_get_mail_with_invalid_mail_id(self):
+        """
+        Test a user is successfully created through the api
+        """
+        with self.client:
+            response = self.retrieve_a_message_given_non_existent_message_id()
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertEqual(data['message'], 'There isnt any mail with the given mail_id')

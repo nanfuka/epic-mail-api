@@ -5,29 +5,28 @@ import json
 
 
 class Test_messages(BaseTestCase):
-    def test_get_all_unread(self):
+    def test_get_all_deleted(self):
         """
         Test a user is successfully created through the api
         """
-        # with self.client:
-        #     response = self.delete_a_particular_message()
-        #     self.assertEqual(response.status_code, 200)
-        #     data = json.loads(response.data)
-        #     self.assertEqual(data['status'], 200)  
-        #     self.assertEqual(data['message'], "email successfully deleted from the system") 
-            # self.assertEqual(data['data']['subject'], "bookstore")  
-            # self.assertEqual(data['data']['message'], 'can you shift it') 
-            # self.assertEqual(data['data']['parentMessageId'], 1)  
-            # self.assertEqual(data['data']['status'], 'draft')
-            # self.assertEqual(data['data']['sender_id'], 1)
-            # self.assertEqual(data['data']['reciever_id'], 1)
+        with self.client:
+            response = self.delete_a_particular_message()
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertEqual(data['status'], 200)
+            self.assertEqual(
+                data['message'],
+                "email successfully deleted from the system")
 
-    # def test_get_recieved_messages_without_token(self):
-    #     """
-    #     Test a user is successfully created through the api
-    #     """
-    #     with self.client:
-    #         response = self.get_all_unread_messages_with_no_token()
-    #         self.assertEqual(response.status_code, 401)
-    #         data = json.loads(response.data)
-    #         self.assertEqual(data['message'], 'Token does not exist')
+    def get_all_deleted_messages_if_messageid_is_invalid(self):
+        """
+        Test a user is successfully created through the api
+        """
+        with self.client:
+            response = self.delete_a_particular_message_given_invalid_messageid()
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertEqual(data['status'], 200)
+            self.assertEqual(
+                data['message'],
+                "email successfully deleted from the system")

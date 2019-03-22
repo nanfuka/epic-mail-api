@@ -61,7 +61,9 @@ class Test_registration(BaseTestCase):
                 "xcsdfsfs", "/jhgjhlb/", "deb@ggmal.com", "secret")
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['error'], 'lastname should only be made up of letters')
+            self.assertEqual(
+                data['error'],
+                'lastname should only be made up of letters')
             self.assertEqual(data['status'], 404)
 
     def test_signup_with_firstname_as_empty_space(self):
@@ -186,8 +188,12 @@ class Test_registration(BaseTestCase):
         """
         with self.client:
 
-            response = self.client.post('api/v1/auth/signup', data=json.dumps(dict(
-                lastname="kalungi", email="deb@gmal.com", password="secret")),
+            response = self.client.post(
+                'api/v1/auth/signup',
+                data=json.dumps(dict(
+                                    lastname="kalungi",
+                                    email="deb@gmal.com",
+                                    password="secret")),
                 content_type='application/json')
 
             self.assertEqual(response.status_code, 200)
@@ -201,8 +207,12 @@ class Test_registration(BaseTestCase):
         """
         with self.client:
 
-            response = self.client.post('api/v1/auth/signup', data=json.dumps(dict(
-                firstname="deb", email="deb@gmal.com", password="secret")),
+            response = self.client.post(
+                'api/v1/auth/signup',
+                data=json.dumps(dict(
+                                    firstname="deb",
+                                    email="deb@gmal.com",
+                                    password="secret")),
                 content_type='application/json')
 
             self.assertEqual(response.status_code, 200)
@@ -235,8 +245,12 @@ class Test_registration(BaseTestCase):
         """
         with self.client:
 
-            response = self.client.post('api/v1/auth/signup', data=json.dumps(dict(
-                firstname="deb", lastname="kalungi", email="deb@gmal.com")),
+            response = self.client.post(
+                'api/v1/auth/signup',
+                data=json.dumps(dict(
+                                firstname="deb",
+                                lastname="kalungi",
+                                email="deb@gmal.com")),
                 content_type='application/json')
 
             self.assertEqual(response.status_code, 200)
@@ -250,8 +264,13 @@ class Test_registration(BaseTestCase):
         """
         with self.client:
 
-            response = self.client.post('api/v1/auth/signup', data=json.dumps(dict(
-                firstname="deb", lastname="kalungi", email="deb@gdmal.com", password="")),
+            response = self.client.post(
+                'api/v1/auth/signup',
+                data=json.dumps(dict(
+                                    firstname="deb",
+                                    lastname="kalungi",
+                                    email="deb@gdmal.com",
+                                    password="")),
                 content_type='application/json')
 
             self.assertEqual(response.status_code, 200)
@@ -265,12 +284,19 @@ class Test_registration(BaseTestCase):
         """
         with self.client:
 
-            response = self.client.post('api/v1/auth/signup', data=json.dumps(dict(
-                firstname="deb", lastname="kalungi", email="deb@gdmal.com", password="jh")),
+            response = self.client.post(
+                'api/v1/auth/signup',
+                data=json.dumps(dict(
+                                    firstname="deb",
+                                    lastname="kalungi",
+                                    email="deb@gdmal.com",
+                                    password="jh")),
                 content_type='application/json')
 
             self.assertEqual(response.status_code, 200)
 
             data = json.loads(response.data)
-            self.assertEqual(data['error'], "weak password, please increase password strength")
+            self.assertEqual(
+                data['error'],
+                "weak password, please increase password strength")
     

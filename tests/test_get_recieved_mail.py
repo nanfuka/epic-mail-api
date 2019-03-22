@@ -13,10 +13,12 @@ class Test_messages(BaseTestCase):
             response = self.get_all_recieved_mail()
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)  
-            self.assertEqual(data['data'][0]['subject'], "graduation ceremony")  
-            self.assertEqual(data['data'][0]['message'], 'invitation to attend my graduation') 
-            self.assertEqual(data['data'][0]['parentMessageId'], 1)  
+            self.assertEqual(data['status'], 200)
+            self.assertEqual(data['data'][0]['subject'], "graduation ceremony")
+            self.assertEqual(
+                data['data'][0]['message'],
+                'invitation to attend my graduation')
+            self.assertEqual(data['data'][0]['parentMessageId'], 2)
             self.assertEqual(data['data'][0]['status'], 'sent')
             self.assertEqual(data['data'][0]['sender_id'], 1)
             self.assertEqual(data['data'][0]['reciever_id'], 1)
@@ -30,8 +32,6 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 401)
             data = json.loads(response.data)
             self.assertEqual(data['message'], 'Token does not exist')
-
-
 
     def test_get_recieved_messages_with_invalid_token(self):
         """
@@ -49,4 +49,3 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(data['status'], 200)
-            # self.assertEqual(data['message'], 'there is no recieved mail to the current reciever_id yet')

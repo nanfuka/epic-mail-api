@@ -94,20 +94,19 @@ def get_id_from_header():
 @authentication.user_token
 def create_message():
     """The loggedin user can create a new email using this route"""
-    senderid = get_id_from_header()
+    token = authentication.extract_token_from_header()
+    senderid = authentication.decode_user_token_id(token)
     data = request.get_json()
     validate = validators.validate_message_keys('subject',
                                                 'message',
-                                                'parentMessageId',
                                                 'status',
                                                 'reciever_id',
-                                                'sender_id', list(data.keys()))
+                                                list(data.keys()))
     if validate:
         return jsonify({"status": 400, "error": validate})
 
     subject = data['subject']
     message = data['message']
-    parentMessageId = data['parentMessageId']
     reciever_id = data['reciever_id']
     status = data['status']
     sender_id = senderid
@@ -115,41 +114,44 @@ def create_message():
     invalid_subject_message_status = validators.validate_subject(
         subject, message, status)
     if invalid_subject_message_status:
-        return jsonify({"status": 400, "error": invalid_subject_message_status})
+        return jsonify({
+            "status": 400,
+            "error": invalid_subject_message_status})
 
-    valid_id = validators.validate_id(parentMessageId, sender_id, reciever_id)
-    valid_parentId = validators.get_parentMessageId(parentMessageId)
-    if valid_parentId:
-        return jsonify({"status": 400, "error": valid_parentId})
-
+    valid_id = validators.validate_id(reciever_id)
     if valid_id:
         return jsonify({"status": 400, "error": valid_id})
 
     new_mail = mail_controller.create_mail(reciever_id=reciever_id,
-                                           sender_id=sender_id,
+                                           sender_id=senderid,
                                            subject=subject,
                                            message=message,
-                                           parentMessageId=parentMessageId,
                                            status=status)
     return jsonify({"status": 201, "data": [new_mail]})
+
 
 @app.route('/api/v1/messages/sent', methods=['GET'])
 @authentication.user_token
 def get_sent_mail():
     
     """Route which fetches all mail sent by the current user"""
-    token = authentication.extract_token_from_header()
-    sender_id = authentication.decode_user_token_id(token)
+    sender_id = senderid = get_id_from_header()
     return jsonify(mail_controller.get_all_mail_sent_by_a_user(sender_id))
+
 
 @app.route('/api/v1/messages', methods=['GET'])
 @authentication.user_token
 def get_recieved_mail():
-    """reciever can view all mail sent to them marked sent with a recieverid of logged in user"""
+    """
+    reciever can view all mail sent to them marked
+     sent with a recieverid of logged in user
+    """
     # token = authentication.extract_token_from_header()
     # reciever_id = authentication.decode_user_token_id(token)
     reciever_id = get_id_from_header()
-    return jsonify(mail_controller.get_all_recieved_messages_of_a_user(reciever_id))
+    return jsonify(
+        mail_controller.get_all_recieved_messages_of_a_user(reciever_id))
+
 
 @app.route('/api/v1/messages/unread', methods=['GET'])
 @authentication.user_token
@@ -163,10 +165,12 @@ def get_unread_mail():
     reciever_id = get_id_from_header()
     return jsonify(mail_controller.get_all_unread_mail_for_a_user(reciever_id))
 
+
 @app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
 def get_particular_mail(message_id):
     """Route for retrieving a particular mail"""
     return jsonify(mail_controller.get_specific_users_email(message_id))
+
 
 @app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
 def delete_particular_mail(message_id):
