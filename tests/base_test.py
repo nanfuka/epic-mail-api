@@ -214,7 +214,7 @@ class BaseTestCase(unittest.TestCase):
         """Delete a particular message given message id"""
         self.post_a_message()
         return self.client.delete(
-            '/api/v1/messages/deleted/2'
+            '/api/v1/messages/deleted/1'
         )
 
     def delete_a_particular_message_given_invalid_messageid(self):
