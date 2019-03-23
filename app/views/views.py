@@ -4,6 +4,7 @@ from app.controllers.mail_controller import Mail_controller
 from functools import wraps
 import jwt
 import datetime
+from flasgger import Swagger, swag_from
 
 from app.validators import Validators
 from app.auth import Authentication
@@ -11,7 +12,7 @@ from app.auth import Authentication
 
 app = Flask(__name__)
 
-
+swagger = Swagger(app)
 validators = Validators()
 user_controller = User_controllers()
 mail_controller = Mail_controller()
@@ -20,6 +21,7 @@ authentication = Authentication()
 
 
 @app.route('/')
+@swag_from('../apidocs/index.yml', methods=['GET'])
 def index():
     """route that returns the welcome note or index page"""
     return "welcome to Epic mail Application"
@@ -160,9 +162,9 @@ def get_unread_mail():
     """
     view all messages whose status is sent to a particular reciever-id
     """
-    # token = authentication.extract_token_from_header()
-    # reciever_id = authentication.decode_user_token_id(token)
-    reciever_id = get_id_from_header()
+    token = authentication.extract_token_from_header()
+    reciever_id = authentication.decode_user_token_id(token)
+    # reciever_id = get_id_from_header()
     return jsonify(mail_controller.get_all_unread_mail_for_a_user(reciever_id))
 
 

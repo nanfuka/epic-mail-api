@@ -112,10 +112,13 @@ class Mail_controller:
                 return {
                     "status": 200,
                     "message": "email successfully deleted from the system"}
+            return {"status": 200, "message": "the id provided is not yet in the system"}
         if not mail_list:
             return {
                 "status": 200,
                 "message": "There isn't any mail in the inbox"}
+
+        
 
     def retrieve_a_message(self):
         """Method to retrieve a message"""

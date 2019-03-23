@@ -1,0 +1,19 @@
+End pont for accessing the index page
+---
+tags:
+  - INDEX
+parameters:
+  - name: body
+    description: This is the welcome note to the epic mail application
+
+
+responses:
+  200:
+    description: Accessing the url
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "welcome to Epic mail Application"
