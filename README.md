@@ -129,9 +129,12 @@ python run.py
 - Postman used to test the api end points
 
 ## Deployment
-- The link to Heroku where the api is deployed can be found [here](https://epicd.herokuapp.com/)
+- The link to Heroku where the api is deployed can be found [here](https://epiks.herokuapp.com/)
 
 - To access other routes append the api end points stated above to the home route.
+
+## Documentation
+- This application detailed explanation of how it operates has been documented using swagger documentation. click [here](https://epiks.herokuapp.com/apidocs/) to view the documentation 
 
 ## Authors
 Deborah Kalungi
