@@ -24,7 +24,7 @@ authentication = Authentication()
 @swag_from('../apidocs/index.yml', methods=['GET'])
 def index():
     """route that returns the welcome note or index page"""
-    return "welcome to Epic mail Application"
+    return "welcome to the Epic mail Application "
 
 
 @app.route('/api/v1/auth/signup', methods=['POST'])
