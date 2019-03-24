@@ -1,0 +1,20 @@
+User can delete a particular mail
+---
+tags:
+  - DELETE SPECIFIC MAIL
+parameters:
+  - name: body
+    description: This is the route from which a specific mail with specific email id can be deleted
+
+
+responses:
+  200:
+    description: specific mail deleted successfuly
+    schema:
+      type: object
+      properties:
+        message:
+          type: "string"
+          example: "email successfully deleted from the system"
+
+        
