@@ -38,36 +38,23 @@ responses:
           type: string
           enum:
             - "thanks for registering with Epic mai"
-  # 400:
-  #   description: Failed to create meal
-  #   schema:
-  #     type: object
-  #     properties:
-  #       message:
-  #         type: string
-  #         enum:
-  #           - "Meal name must be between 3 to 25 characters long"
-  #           - "Invalid characters not allowed"
-  #           - "Price must be a positive number"
-  #           - "Price must be a number"
-  # 401:
-  #   description: Failed to create meal
-  #   schema:
-  #     type: object
-  #     properties:
-  #       message:
-  #         type: string
-  #         enum:
-  #           - "token missing"
-  #           - "Invalid token. Please register or login"
-  #           - "Meal name already exists"
-  #           - "Customer is not authorized to access this page"
-  # 409:
-  #   description: Failed to create meal
-  #   schema:
-  #     type: object
-  #     properties:
-  #       message:
-  #         type: string
-  #         enum:
-  #           - "Meal name already exists"
+    schema:
+      type: object
+      required:
+        - "firstname"
+        - "lastname"
+        - "email"
+        - "password"
+      properties:
+        firstname:
+          type: "string"
+          example: "Debbie"
+        lastname:
+          type: "string"
+          example: "Nsubuga"
+        email:
+          type: "string"
+          example: "kalungi2k6@gmail.com"
+        id:
+          type: interger
+          example: 1

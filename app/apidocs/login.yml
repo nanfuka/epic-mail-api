@@ -1,26 +1,18 @@
-Endpoint to register a user
+Endpoint to login a user
 ---
 tags:
   - SIGNUP
 parameters:
   - name: body
-    description: This contains imformation required for signing up a new user
+    description: This contains imformation required for logging in a user
     in: body
     required: true
     schema:
       type: object
       required:
-        - "firstname"
-        - "lastname"
         - "email"
         - "password"
       properties:
-        firstname:
-          type: "string"
-          example: "Debbie"
-        lastname:
-          type: "string"
-          example: "Nsubuga"
         email:
           type: "string"
           example: "kalungi2k6@gmail.com"
@@ -30,11 +22,25 @@ parameters:
 
 responses:
   201:
-    description: User succesfully loggedin
+    description: Upon logging in successfully logged in
     schema:
       type: object
       properties:
         message:
-          type: string
+          type: "string"
           enum:
             - "you have successfully logged in as a user"
+        token: 
+          type: "string"
+          enum: 
+            - "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNTUzNDI0MDAzfQ.EWSP7WGg6tVk44VQq4sFodkd6jFHzmlZVi7V75G3vgc"
+  200:
+    description: logging in before signup
+    schema:
+      type: object
+      properties:
+        message:
+          type: "string"
+          enum:
+            - "there are currently no registered users in the system"
+       

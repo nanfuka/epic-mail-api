@@ -138,6 +138,7 @@ def create_message():
 
 @app.route('/api/v1/messages/sent', methods=['GET'])
 @authentication.user_token
+# @swag_from('../apidocs/sent.yml', methods=['GET'])
 def get_sent_mail():
     
     """Route which fetches all mail sent by the current user"""
@@ -147,6 +148,8 @@ def get_sent_mail():
 
 @app.route('/api/v1/messages', methods=['GET'])
 @authentication.user_token
+# @swag_from('../apidocs/recieved.yml', methods=['GET'])
+
 def get_recieved_mail():
     """
     reciever can view all mail sent to them marked
@@ -161,6 +164,8 @@ def get_recieved_mail():
 
 @app.route('/api/v1/messages/unread', methods=['GET'])
 @authentication.user_token
+# @swag_from('../apidocs/unread.yml', methods=['GET'])
+
 def get_unread_mail():
 
     """
@@ -173,12 +178,15 @@ def get_unread_mail():
 
 
 @app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
+# @swag_from('../apidocs/particular_message.yml', methods=['GET'])
 def get_particular_mail(message_id):
     """Route for retrieving a particular mail"""
     return jsonify(mail_controller.get_specific_users_email(message_id))
 
 
 @app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
+# @swag_from('../apidocs/delete_particular_message.yml', methods=['DELETE'])
+
 def delete_particular_mail(message_id):
     """Route for deleting a particular mail"""
     return jsonify(mail_controller.delete_specific_users_email(message_id))

@@ -47,7 +47,7 @@ parameters:
     
 responses:
   201:
-    description: Message created successfully successfully
+    description: Message created successfully
     schema:
       type: object
       required:
@@ -57,7 +57,12 @@ responses:
         - "parentmassageId"
         - "status"
         - "subject"
+
       properties:
+        
+        Createdon:
+          type: integer
+          example: 200/02/26
         Createdon:
           type: integer
           example: 200/02/26
