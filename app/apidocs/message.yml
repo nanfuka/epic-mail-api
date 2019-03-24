@@ -1,0 +1,94 @@
+User can create a message.
+---
+tags:
+  - CREATE MESSAGE 
+  
+  
+parameters:
+  # - in: path
+  #   name: order_id
+  #   required: true
+  #   type: integer
+    # description: This route is used by an admin account to update order status. 
+  - name: body
+    description: This contains imformation required for creating a new mail
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "firstname"
+        - "lastname"
+        - "email"
+        - "password"
+      properties:
+        firstname:
+          type: "string"
+          example: "Debbie"
+        lastname:
+          type: "string"
+          example: "Nsubuga"
+        email:
+          type: "string"
+          example: "kalungi2k6@gmail.com"
+        password:
+          type: "string"
+          example: "dfgfdgdsdf"
+
+
+  
+  - in: header
+    name: Authorization
+    description: authorization header
+    required: true
+    type: string
+    schema:
+    id: bearer
+    
+responses:
+  201:
+    description: Message created successfully successfully
+    schema:
+      type: object
+      required:
+        - "Createdon"
+        - "id"
+        - "message"
+        - "parentmassageId"
+        - "status"
+        - "subject"
+      properties:
+        Createdon:
+          type: integer
+          example: 200/02/26
+        id:
+          type: "string"
+          example: integer
+        message:
+          type: "string"
+          example: "please confirm your prescence at the conference"
+        parentmassageId:
+          type: integer
+          example: 2
+
+        status:
+          type: string
+          example: "sent"
+        subject:
+          type: string
+          example: "conference"
+  400:
+    description: Bad Request. (Validation error)
+
+  401:
+    description: Unauthorization error
+
+security:
+  - JWT:
+      description: Provide JWT token
+      type: apikey
+      schema: bearer
+      name: Authorization
+      in: header
+      template: "Bearer {apikey}"
+      bearerFormat: JWT

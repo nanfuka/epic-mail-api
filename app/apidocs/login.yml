@@ -1,0 +1,40 @@
+Endpoint to register a user
+---
+tags:
+  - SIGNUP
+parameters:
+  - name: body
+    description: This contains imformation required for signing up a new user
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "firstname"
+        - "lastname"
+        - "email"
+        - "password"
+      properties:
+        firstname:
+          type: "string"
+          example: "Debbie"
+        lastname:
+          type: "string"
+          example: "Nsubuga"
+        email:
+          type: "string"
+          example: "kalungi2k6@gmail.com"
+        password:
+          type: "string"
+          example: "dfgfdgdsdf"
+
+responses:
+  201:
+    description: User succesfully loggedin
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          enum:
+            - "you have successfully logged in as a user"

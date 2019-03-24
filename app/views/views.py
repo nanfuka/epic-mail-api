@@ -28,6 +28,7 @@ def index():
 
 
 @app.route('/api/v1/auth/signup', methods=['POST'])
+@swag_from('../apidocs/signup.yml', methods=['POST'])
 def signup():
     """route for registering a new user of teh application"""
     data = request.get_json()
@@ -63,6 +64,7 @@ def signup():
 
 
 @app.route('/api/v1/auth/login', methods=['POST'])
+@swag_from('../apidocs/login.yml', methods=['POST'])
 def login():
     """
     route for logging in only the registered user but 
@@ -94,6 +96,8 @@ def get_id_from_header():
 
 @app.route('/api/v1/message', methods=['POST'])
 @authentication.user_token
+@swag_from('../apidocs/message.yml', methods=['POST'])
+
 def create_message():
     """The loggedin user can create a new email using this route"""
     token = authentication.extract_token_from_header()
