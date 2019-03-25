@@ -1,0 +1,47 @@
+User can retrieve all sent mail
+---
+tags:
+  - GET SENT MAIL
+parameters:
+  - name: body
+    description: This is the route from which all sent mail can be retrieved
+
+
+responses:
+  200:
+    description: sent mail retrieved successfuly
+    schema:
+      type: object
+      properties:
+        createdOn:
+          type: date
+          example: "Sun, 24 Mar 2019 16:28:03 GMT"
+
+        id:
+          type: integer
+          example: 1
+
+        message:
+          type: integer
+          example: 1
+
+        parentMessageId:
+          type: integer
+          example: 2
+
+        reciever_id:
+          type: integer
+          example: 2
+        sender_id:
+          type: integer
+          example: 2
+
+        status:
+          type: "string"
+          example: "sent"
+
+        subject:
+          type: "string"
+          example: "the lengends of the lost city"
+
+
