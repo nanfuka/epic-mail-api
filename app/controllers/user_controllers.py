@@ -14,7 +14,9 @@ class User_controllers:
         user = User(**kwargs)
         newuser = user.get_dictionary()
         user_list.append(newuser)
-        return {"id": newuser['id'], "firstname": newuser['firstname'],
+        id = newuser['id']
+        token = authentication.create_user_token(id)
+        return {"token": token, "id": newuser['id'], "firstname": newuser['firstname'],
                 "lastname": newuser['lastname'], "email": newuser['email']}
 
     def get_login_email(self, email):
