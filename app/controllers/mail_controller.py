@@ -110,8 +110,8 @@ class Mail_controller:
             if message['id'] == mail_id:
                 mail_list.remove(message)
                 return {
-                    "status": 200,
-                    "message": "email successfully deleted from the system"}
+                    "status": 200, "data": [{"message": "email successfully deleted from the system"}]
+                    }
             return {"status": 200, "message": "the id provided is not yet in the system"}
         if not mail_list:
             return {
