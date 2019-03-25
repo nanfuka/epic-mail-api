@@ -1,9 +1,9 @@
 import re
-from app.controllers.user_controllers import User_controllers
+from app.controllers.user_controllers import UserControllers
 from app.models.users import user_list
 from app.models.mail import mail_list
 
-user_controller = User_controllers()
+user_controller = UserControllers()
 
 
 class Validators:

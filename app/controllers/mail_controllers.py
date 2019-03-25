@@ -5,13 +5,11 @@ from app.auth import Authentication
 authentication = Authentication()
 
 
-class Mail_controller:
+class MailController:
     def create_mail(self, **kwargs):
         """function for creating a new message"""
         mail = Mail(**kwargs)
         new_mail = mail.get_dictionary()
-        # mail_list.append(new_mail)
-        # return new_mail
         message = {"id": new_mail['id'],
                    "createdOn": new_mail['createdOn'],
                    "subject": new_mail['subject'],
@@ -35,7 +33,7 @@ class Mail_controller:
         Function to retrieve all messages
          with a particular user_id as the 
          reciever_id and a status of read 
-         """
+        """
         recieved_mail = []
 
         for mail in mail_list:
@@ -44,12 +42,12 @@ class Mail_controller:
 
             if mail['status'] == "sent" and mail['reciever_id'] == reciever_id:
                 recieved_mail.append(mail)
-                
+
         if recieved_mail:
             return {'status': 200, "data": recieved_mail}
         return {
-                "status": 200, 
-                "message":
+            "status": 200,
+            "message":
                 "there is no recieved mail to the current reciever_id yet"}
         if not mail_list:
             return {"status": 200,
@@ -85,8 +83,8 @@ class Mail_controller:
             if mail['status'] == "sent" and mail['sender_id'] == sender_id:
                 sent.append(mail)
         return {"sent": sent}
-        
-    def get_specific_users_email(self, mail_id):
+
+    def get_specific_users_email(self, mail_id, reciever_id):
         """Function that retrieves a particular mail"""
 
         for mail in mail_list:
@@ -95,30 +93,28 @@ class Mail_controller:
                 return {
                     "status": 200,
                     "message": "There isnt any mail with the given mail_id"}
-            if mail['id'] == mail_id:
+            if mail['id'] == mail_id and mail['reciever_id'] == reciever_id:
                 return {"status": 200, "data": [mail]}
         if not mail_list:
             return {"status": 200,
                     "message": "There isn't any mail in the inbox"}
 
-    def delete_specific_users_email(self, mail_id):
+    def delete_specific_users_email(self, mail_id, reciever_id):
         """A user can delete their email with a particular email_id"""
 
         for message in mail_list:
             if len(mail_list) < 1:
                 return {"message": "there are currently no emails"}
-            if message['id'] == mail_id:
+            if message['id'] == mail_id and message['reciever_id'] == reciever_id:
                 mail_list.remove(message)
                 return {
                     "status": 200, "data": [{"message": "email successfully deleted from the system"}]
-                    }
+                }
             return {"status": 200, "message": "the id provided is not yet in the system"}
         if not mail_list:
             return {
                 "status": 200,
                 "message": "There isn't any mail in the inbox"}
-
-        
 
     def retrieve_a_message(self):
         """Method to retrieve a message"""
@@ -126,4 +122,3 @@ class Mail_controller:
         return self.client.get(
             'api/v1/message/1'
         )
-   

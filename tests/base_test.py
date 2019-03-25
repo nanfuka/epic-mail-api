@@ -198,30 +198,39 @@ class BaseTestCase(unittest.TestCase):
 
     def retrieve_a_message(self):
         """Method to retrieve a particular message"""
+        token = self.get_token()
         self.post_a_message()
         return self.client.get(
-            'api/v1/messages/1'
+            'api/v1/messages/1',  content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
         )
 
     def retrieve_a_message_given_non_existent_message_id(self):
         """Method to retrieve a particular message of a non existing user"""
+        token = self.get_token()
         self.post_a_message()
         return self.client.get(
-            'api/v1/messages/10'
+            'api/v1/messages/10',  content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
         )
 
     def delete_a_particular_message(self):
         """Delete a particular message given message id"""
+        token = self.get_token()
         self.post_a_message()
         return self.client.delete(
-            '/api/v1/messages/deleted/1'
+            '/api/v1/messages/deleted/1',
+            content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
         )
 
     def delete_a_particular_message_given_invalid_messageid(self):
         """Delete a particular message given an invalid message id"""
+        token = self.get_token()
         self.post_a_message()
         return self.client.delete(
-            '/api/v1/messages/deleted/100'
+            '/api/v1/messages/deleted/100',  content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
         )
 
     def get_all_unread_messages(self):
