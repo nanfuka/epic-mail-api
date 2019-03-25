@@ -46,7 +46,7 @@ class MailController:
         if recieved_mail:
             return {'status': 200, "data": recieved_mail}
         return {
-            "status": 200,
+            "status": 400,
             "message":
                 "there is no recieved mail to the current reciever_id yet"}
         if not mail_list:
