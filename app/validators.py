@@ -2,8 +2,9 @@ import re
 from app.controllers.user_controllers import UserControllers
 from app.models.users import user_list
 from app.models.mail import mail_list
-
+from app.db import Database
 user_controller = UserControllers()
+db = Database()
 
 
 class Validators:
@@ -40,7 +41,7 @@ class Validators:
             return "please enter the email"
         if not email_validation.match(email):
             return 'Invalid email, it should be in this format; kals@gma.com'
-        if user_controller.get_login_email(email):
+        if db.check_email(email):
             return "the email you have chosen is already in use"
 
     def validate_login_values(self, email, password):
