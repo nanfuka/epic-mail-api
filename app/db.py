@@ -34,3 +34,9 @@ class Database:
         query = "SELECT * FROM users WHERE email = '{}'".format(email)
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def login(self, email, password):
+        query = "SELECT * FROM users WHERE email = '{}' and password = '{}'".format(email, password)
+        self.cursor.execute(query)
+        return self.cursor.fetchone()
+    

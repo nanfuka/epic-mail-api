@@ -65,29 +65,29 @@ def signup():
                     "message": "thanks for registering with Epic mail"})
 
 
-# @app.route('/api/v1/auth/login', methods=['POST'])
-# @swag_from('../apidocs/login.yml', methods=['POST'])
-# def login():
-#     """
-#     route for logging in only the registered user but 
-#     submitting the correct email and password
-#     """
-#     data = request. get_json()
+@app.route('/api/v1/auth/login', methods=['POST'])
+@swag_from('../apidocs/login.yml', methods=['POST'])
+def login():
+    """
+    route for logging in only the registered user but 
+    submitting the correct email and password
+    """
+    data = request. get_json()
 
-#     validate_login_keys = validators.validate_login_keys(
-#         'email',
-#         'password',
-#         list(data.keys()))
-#     if validate_login_keys:
-#         return jsonify({"status": 400, "error": validate_login_keys})
-#     email = data['email']
-#     password = data['password']
-#     invalid_login_values = validators.validate_login_values(email, password)
-#     if invalid_login_values:
-#         return jsonify({"status": 404, "error": invalid_login_values})
-#     login = user_controller.login(email, password)
-#     if login:
-#         return jsonify(login)
+    validate_login_keys = validators.validate_login_keys(
+        'email',
+        'password',
+        list(data.keys()))
+    if validate_login_keys:
+        return jsonify({"status": 400, "error": validate_login_keys})
+    email = data['email']
+    password = data['password']
+    invalid_login_values = validators.validate_login_values(email, password)
+    if invalid_login_values:
+        return jsonify({"status": 404, "error": invalid_login_values})
+    login = user_controller.login(email, password)
+    if login:
+        return jsonify(login)
 
 
 # def get_id_from_header():
