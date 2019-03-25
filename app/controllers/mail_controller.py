@@ -96,7 +96,7 @@ class Mail_controller:
                     "status": 200,
                     "message": "There isnt any mail with the given mail_id"}
             if mail['id'] == mail_id:
-                return {"status": 200, "data": mail}
+                return {"status": 200, "data": [mail]}
         if not mail_list:
             return {"status": 200,
                     "message": "There isn't any mail in the inbox"}
