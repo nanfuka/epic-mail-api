@@ -5,7 +5,7 @@ import json
 
 
 class Test_messages(BaseTestCase):
-    def test_get_all_unread(self):
+    def test_get_a_particular_message(self):
         """
         Test a user is successfully created through the api
         """

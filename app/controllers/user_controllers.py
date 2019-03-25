@@ -6,16 +6,18 @@ import datetime
 authentication = Authentication()
 
 
-class User_controllers:
+class UserControllers:
     def signup(self, **kwargs):
         """
         function that appends the registered user to teh users'
          list and returns the user details"""
         user = User(**kwargs)
-        newuser = user.get_dictionary()
-        user_list.append(newuser)
-        return {"id": newuser['id'], "firstname": newuser['firstname'],
-                "lastname": newuser['lastname'], "email": newuser['email']}
+        new_user = user.get_dictionary()
+        user_list.append(new_user)
+        id = new_user['id']
+        token = authentication.create_user_token(id)
+        return {"token": token, "id": new_user['id'], "firstname": new_user['firstname'],
+                "lastname": new_user['lastname'], "email": new_user['email']}
 
     def get_login_email(self, email):
         """function which checks whether an email has beed used before"""
@@ -29,13 +31,13 @@ class User_controllers:
         id = self.get_login_id(email)
         if len(user_list) < 1:
             return {
-                "status": 200,
+                "status": 400,
                 "message":
                 "there are currently no registered users in the system"}       
         for user in user_list:
             if user['email'] == email and user['password'] == password:
                 token = authentication.create_user_token(id)    
-                return {
+                return { "status": 200,
                     "data": [{"token": token}],
                     "message": "you have successfully logged in as a user"}   
             if user['email'] != email and user['password'] != password:
@@ -54,8 +56,3 @@ class User_controllers:
                 id = user['id']
                 return id
 
-    # def validate_login_keys(self, email, password, data):
-    #     if email not in data:
-    #         return "Enter email field"
-    #     if password not in data:
-    #         return "Enter password field"

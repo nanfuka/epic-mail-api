@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, json
-from app.controllers.user_controllers import User_controllers
-from app.controllers.mail_controller import Mail_controller
+from app.controllers.user_controllers import UserControllers
+from app.controllers.mail_controllers import MailController
 from functools import wraps
 import jwt
 import datetime
@@ -14,8 +14,8 @@ app = Flask(__name__)
 
 swagger = Swagger(app)
 validators = Validators()
-user_controller = User_controllers()
-mail_controller = Mail_controller()
+user_controller = UserControllers()
+mail_controller = MailController()
 
 authentication = Authentication()
 
@@ -155,8 +155,6 @@ def get_recieved_mail():
     reciever can view all mail sent to them marked
      sent with a recieverid of logged in user
     """
-    # token = authentication.extract_token_from_header()
-    # reciever_id = authentication.decode_user_token_id(token)
     reciever_id = get_id_from_header()
     return jsonify(
         mail_controller.get_all_recieved_messages_of_a_user(reciever_id))
@@ -171,29 +169,30 @@ def get_unread_mail():
     """
     view all messages whose status is sent to a particular reciever-id
     """
-    token = authentication.extract_token_from_header()
-    reciever_id = authentication.decode_user_token_id(token)
-    # reciever_id = get_id_from_header()
+    reciever_id = get_id_from_header()
     return jsonify(mail_controller.get_all_unread_mail_for_a_user(reciever_id))
 
 
-@app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
-@swag_from('../apidocs/particular_mail.yml', methods=['GET'])
-def get_particular_mail(message_id):
-    """Route for retrieving a particular mail"""
-    return jsonify(mail_controller.get_specific_users_email(message_id))
-
-
 @app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
-@swag_from('../apidocs/delete_particular_message.yml', methods=['DELETE'])
+@authentication.user_token
+@swag_from('../apidocs/unread.yml', methods=['GET'])
 
-def delete_particular_mail(message_id):
-    """Route for deleting a particular mail"""
-    return jsonify(mail_controller.delete_specific_users_email(message_id))
+def get_delete_mail(message_id):
 
+    """
+    view all messages whose status is sent to a particular reciever-id
+    """
+    reciever_id = get_id_from_header()
+    return jsonify(mail_controller.delete_specific_users_email(message_id, reciever_id))
 
+@app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
+@authentication.user_token
+@swag_from('../apidocs/unread.yml', methods=['GET'])
 
+def get_particular_mail(message_id):
 
+    """Route for retrieving a particular mail"""
 
-
+    reciever_id = get_id_from_header()
+    return jsonify(mail_controller.get_specific_users_email(message_id, reciever_id))
 
