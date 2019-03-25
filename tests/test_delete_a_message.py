@@ -5,7 +5,7 @@ import json
 
 
 class Test_messages(BaseTestCase):
-    def test_get_all_deleted(self):
+    def test_deleted_mail(self):
         """
         Test a user is successfully created through the api
         """
@@ -15,7 +15,7 @@ class Test_messages(BaseTestCase):
             data = json.loads(response.data)
             self.assertEqual(data['status'], 200)
             self.assertEqual(
-                data['message'],
+                data["data"][0]['message'],
                 "email successfully deleted from the system")
 
     def get_all_deleted_messages_if_messageid_is_invalid(self):
