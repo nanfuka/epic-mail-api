@@ -8,7 +8,7 @@ from flasgger import Swagger, swag_from
 from app.db import Database
 from app.validators import Validators
 from app.auth import Authentication
-
+import datetime
 
 app = Flask(__name__)
 
@@ -96,46 +96,94 @@ def login():
 #     return senderid
 
 
-# @app.route('/api/v1/message', methods=['POST'])
-# @authentication.user_token
+@app.route('/api/v2/message', methods=['POST'])
+@authentication.user_token
+@swag_from('../apidocs/message.yml', methods=['POST'])
+
+def create_message():
+    """The loggedin user can create a new email using this route"""
+    token = authentication.extract_token_from_header()
+    senderid = authentication.decode_user_token_id(token)
+    data = request.get_json()
+    validate = validators.validate_message_keys('subject',
+                                                'message',
+                                                'status',
+                                                'reciever_id',
+                                                'parent_message_id',
+                                                list(data.keys()))
+    if validate:
+        return jsonify({"status": 400, "error": validate})
+    # created_on = datetime.datetime.now()
+    # subject = data['subject']
+    # message = data['message']
+    # reciever_id = data['reciever_id']
+    # status = data['status']
+    # sender_id = senderid
+
+    created_on = datetime.datetime.now()
+    subject = data['subject']
+    message = data['message']
+    status = data['status']
+    sender_id= senderid 
+    reciever_id = data['reciever_id']
+    parent_message_id = data['parent_message_id']
+    
+
+
+    invalid_subject_message_status = validators.validate_subject(
+        subject, message, status)
+    if invalid_subject_message_status:
+        return jsonify({
+            "status": 400,
+            "error": invalid_subject_message_status})
+
+    # invalid_parent=validators.validate_parent_message_id(parent_message_id)
+    # if invalid_parent:
+    #     return jsonify({"status": 400, "error": invalid_parent}) 
+
+    valid_id = validators.validate_id(reciever_id)
+    if valid_id:
+        return jsonify({"status": 400, "error": valid_id})
+    
+    new_mail = database.create_message(
+                                        created_on=created_on,
+                                           
+                                           subject=subject,
+                                           message=message,
+                                           parent_message_id=parent_message_id,
+                                           status=status,
+                                           sender_id=sender_id, 
+                                           reciever_id=reciever_id
+                                           )
+    return jsonify({"status": 201, "data": [new_mail]})
+
+# @app.route('/api/v1/messager', methods=['POST'])
 # @swag_from('../apidocs/message.yml', methods=['POST'])
 
-# def create_message():
+# def create_messager():
 #     """The loggedin user can create a new email using this route"""
-#     token = authentication.extract_token_from_header()
-#     senderid = authentication.decode_user_token_id(token)
 #     data = request.get_json()
-#     validate = validators.validate_message_keys('subject',
-#                                                 'message',
-#                                                 'status',
-#                                                 'reciever_id',
-#                                                 list(data.keys()))
-#     if validate:
-#         return jsonify({"status": 400, "error": validate})
-
+#     created_on = datetime.datetime.now()
 #     subject = data['subject']
 #     message = data['message']
-#     reciever_id = data['reciever_id']
 #     status = data['status']
-#     sender_id = senderid
+#     sender_id= data['sender_id'] 
+#     reciever_id = data['reciever_id']
+#     parent_message_id = data['parent_message_id']
 
-#     invalid_subject_message_status = validators.validate_subject(
-#         subject, message, status)
-#     if invalid_subject_message_status:
-#         return jsonify({
-#             "status": 400,
-#             "error": invalid_subject_message_status})
-
-#     valid_id = validators.validate_id(reciever_id)
-#     if valid_id:
-#         return jsonify({"status": 400, "error": valid_id})
-
-#     new_mail = mail_controller.create_mail(reciever_id=reciever_id,
-#                                            sender_id=senderid,
+#     new_mail = database.create_message(
+#                                         created_on=created_on,
+                                           
 #                                            subject=subject,
 #                                            message=message,
-#                                            status=status)
+#                                            parent_message_id=parent_message_id,
+#                                            status=status,
+#                                            sender_id=sender_id, 
+#                                            reciever_id=reciever_id
+#                                            )
 #     return jsonify({"status": 201, "data": [new_mail]})
+
+#     created_on, subject, message
 
 
 # @app.route('/api/v1/messages/sent', methods=['GET'])

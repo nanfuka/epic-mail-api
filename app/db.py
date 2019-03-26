@@ -29,10 +29,13 @@ class Database:
         table_contacts = """CREATE TABLE IF NOT EXISTS contacts(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""        
         self.cursor.execute(table_contacts)
 
-        table_messages = """CREATE TABLE IF NOT EXISTS messages(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""        
+        table_messages = """CREATE TABLE IF NOT EXISTS messages(ID SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, parent_message_id integer, status VARCHAR(20) NOT NULL, sender_id integer, reciever_id integer);"""        
         self.cursor.execute(table_messages)
 
         table_sent = """CREATE TABLE IF NOT EXISTS sent(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""        
+        self.cursor.execute(table_sent)
+
+        table_draft = """CREATE TABLE IF NOT EXISTS draft(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""        
         self.cursor.execute(table_sent)
 
         table_inbox = """CREATE TABLE IF NOT EXISTS inbox(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""        
@@ -58,25 +61,47 @@ class Database:
         query = "SELECT * FROM users WHERE email = '{}' and password = '{}'".format(email, password)
         self.cursor.execute(query)
         return self.cursor.fetchone()
-    def create_message(self, **kwargs)
-        insert = f"""INSERT INTO messages(createdOn, subject, message, parentMessageId, status) VALUES ('{kwargs.get("createdOn")}', '{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("parentMessageId"), }') RETURNING id, firstname, lastname, email;"""
+    def create_message(self, **kwargs):
+        insert = f"""INSERT INTO messages(subject, message, status) VALUES ( '{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("status")}') RETURNING ID, subject, message, status;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
 
-    def create_sent(self, **kwargs)
+    def create_sent(self, **kwargs):
         insert = f"""INSERT INTO table_sent(senderId, message_id, createdOn) VALUES ('{kwargs.get("senderId")}', '{kwargs.get("message_id")}', '{kwargs.get("createdOn")}')) RETURNING senderId, message_id, createdOn;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
     
-    def create_inbox(self, **kwargs)
+    def create_inbox(self, **kwargs):
         insert = f"""INSERT INTO table_inbox(receiverId, message_id, createdOn) VALUES ('{kwargs.get("receiverId")}', '{kwargs.get("message_id")}', '{kwargs.get("createdOn")}')) RETURNING senderId, message_id, createdOn;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
-    def create_group(self, **kwargs)
+    def create_group(self, **kwargs):
         insert = f"""INSERT INTO table_group(groupId, name) VALUES ('{kwargs.get("groupId")}', '{kwargs.get("name")}')) RETURNING groupId, name;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
-    def create_group_members(self, **kwargs)
+    def create_group_members(self, **kwargs):
         insert = f"""INSERT INTO table_groupmembers(group_id, member_id) VALUES ('{kwargs.get("group_id")}', '{kwargs.get("member_id")}')) RETURNING group_id, member_id;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
+
+    def create_message(self, **kwargs):
+        insert = f"""INSERT INTO messages(created_on, subject, message, parent_message_id, status, sender_id, reciever_id) VALUES ( '{kwargs.get("created_on")}', '{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("parent_message_id")}', '{kwargs.get("status")}', '{kwargs.get("sender_id")}', '{kwargs.get("reciever_id")}') RETURNING ID, created_on, subject, message, parent_message_id, status;"""
+        self.cursor.execute(insert)
+        return self.cursor.fetchone()
+    # def get_parent_message_id(self, message_id):
+    #     if self.get_all_message_id:
+
+        #     query = "SELECT * FROM messages WHERE incident_id = {} and \
+        #     incident_type ='{}'".format(incident_id, incident_type)
+        # db.cursor.execute(query)
+        # return db.cursor.fetchall()
+    def get_all_mails(self):
+        query = f"""SELECT * FROM messages"""
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def get_all_users(self):
+        query = f"""SELECT * FROM users"""
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+

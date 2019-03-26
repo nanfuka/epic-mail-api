@@ -65,9 +65,10 @@ class Validators:
 
     def validate_id(self, reciever_id):
         """function which validates the ids passed upon posting a message"""
-
+        user_list = db.get_all_users()
         if not isinstance(reciever_id, int):
             return "reciever_id should be a number"
+
 
         for mail in mail_list:
             if mail['reciever_id'] != reciever_id:
@@ -96,16 +97,17 @@ class Validators:
 
         status = args[2]
         reciever_id = args[3]
+        parent_message_id = args[4]
 
-        lst = args[4]
+        lst = args[5]
         if subject not in lst:
             return {'message': 'subject field must be present'}
 
         if message not in lst:
             return {'message': 'message field must be present'}
 
-        # if parentMessageId not in lst:
-        #     return {'message': 'parentMessageId field must be present'}
+        if parent_message_id not in lst:
+            return {'message': 'parentMessageId field must be present'}
 
         if status not in lst:
             return {'message': 'status field must be present'}
@@ -143,3 +145,37 @@ class Validators:
 
         if password not in lst:
             return 'password field must be present'
+    # def get_specific_users_email(self, mail_id, reciever_id):
+    #     """Function that retrieves a particular mail"""
+
+    #     for mail in mail_list:
+
+    #         if mail['id'] != mail_id:
+    #             return {
+    #                 "status": 200,
+    #                 "message": "There isnt any mail with the given mail_id"}
+    #         if mail['id'] == mail_id and mail['reciever_id'] == reciever_id:
+    #             return {"status": 200, "data": [mail]}
+    #     if not mail_list:
+    #         return {"status": 200,
+    #                 "message": "There isn't any mail in the inbox"}
+    def validate_parent_message_id(self, parent_message_id, message_id):
+        mail_list = db.get_all_mails()
+        if parent_message_id!= massage_id:
+            return "invalid parent_message_id"
+        # if not mail_list:
+        #     parent_message_id ==1
+        # for mail in mail_list:
+
+        #     if mail['id'] == parent_message_id:
+        #         print ("invalid")
+        # if not mail:
+            return "invalid"
+        # if not mail:
+        #     return "invalid parent"
+        # if not mail_list:
+        #     parent_message_id ==1
+
+        # if not parent_message_id:
+        #     return "please enter teh parnt "
+            
