@@ -28,7 +28,7 @@ def index():
     return "welcome to the Epic mail Application "
 
 
-@app.route('/api/v1/auth/signup', methods=['POST'])
+@app.route('/api/v2/auth/signup', methods=['POST'])
 @swag_from('../apidocs/signup.yml', methods=['POST'])
 def signup():
     """route for registering a new user of teh application"""
@@ -65,7 +65,7 @@ def signup():
                     "message": "thanks for registering with Epic mail"})
 
 
-@app.route('/api/v1/auth/login', methods=['POST'])
+@app.route('/api/v2/auth/login', methods=['POST'])
 @swag_from('../apidocs/login.yml', methods=['POST'])
 def login():
     """
