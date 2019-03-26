@@ -106,9 +106,6 @@ class Validators:
         if message not in lst:
             return {'message': 'message field must be present'}
 
-        if parent_message_id not in lst:
-            return {'message': 'parentMessageId field must be present'}
-
         if status not in lst:
             return {'message': 'status field must be present'}
 
