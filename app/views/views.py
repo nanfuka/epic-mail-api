@@ -234,6 +234,7 @@ def create_group():
 @app.route('/api/v2/groups', methods=['GET'])
 def fetch_groups():
     all_groups = database.fetch_all_groups()
+    return jsonify({"status": 200, "data": all_groups}) 
 
 @app.route('/api/v2/groups', methods=['GET'])
 def delete_groups():

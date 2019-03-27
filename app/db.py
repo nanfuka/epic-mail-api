@@ -186,7 +186,7 @@ class Database:
         return self.cursor.fetchone()
     
     def fetch_all_groups(self):
-        query = "SELECT * FROM epicgroup"
+        query = "SELECT * FROM epicgroups"
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
