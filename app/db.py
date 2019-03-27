@@ -48,7 +48,7 @@ class Database:
         # table_inbox = """CREATE TABLE IF NOT EXISTS inbox(id SERIAL PRIMARY KEY NOT NULL, message_id INTEGER REFERENCES messages(ID), created_on DATE, reciever_id integer, status VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_inbox)
 
-        table_group = """CREATE TABLE IF NOT EXISTS groups(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""
+        table_group = """CREATE TABLE IF NOT EXISTS epicgroups(id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, role VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_group)
 
         table_groupmembers = """CREATE TABLE IF NOT EXISTS groupmembers(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""
@@ -56,6 +56,8 @@ class Database:
 
         table_outbox = """CREATE TABLE IF NOT EXISTS outbox(id SERIAL PRIMARY KEY NOT NULL, message_id INTEGER REFERENCES messages(ID), created_on DATE, sender_id integer);"""
         self.cursor.execute(table_inbox)
+        # table_newgroup = """CREATE TABLE IF NOT EXISTS epicgroup(id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, role VARCHAR(20) NOT NULL);"""
+        # self.cursor.execute(table_users)
 
     def signup(self, **kwargs):
         insert = f"""INSERT INTO users(firstname, lastname, email, password) VALUES ('{kwargs.get("firstname")}', '{kwargs.get("lastname")}', '{kwargs.get("email")}', '{kwargs.get("password")}') RETURNING id, firstname, lastname, email, password;"""
@@ -94,10 +96,10 @@ class Database:
         self.cursor.execute(insert)
         return self.cursor.fetchone()
 
-    def create_group(self, **kwargs):
-        insert = f"""INSERT INTO table_group(groupId, name) VALUES ('{kwargs.get("groupId")}', '{kwargs.get("name")}')) RETURNING groupId, name;"""
-        self.cursor.execute(insert)
-        return self.cursor.fetchone()
+    # def create_group(self, **kwargs):
+    #     insert = f"""INSERT INTO group(groupId, name) VALUES ('{kwargs.get("groupId")}', '{kwargs.get("name")}')) RETURNING groupId, name;"""
+    #     self.cursor.execute(insert)
+    #     return self.cursor.fetchone()
 
     def create_group_members(self, **kwargs):
         insert = f"""INSERT INTO table_groupmembers(group_id, member_id) VALUES ('{kwargs.get("group_id")}', '{kwargs.get("member_id")}')) RETURNING group_id, member_id;"""
@@ -176,3 +178,26 @@ class Database:
         query = "SELECT * FROM inbox WHERE sender_id = '{}'".format(sender_id)
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def create_group(self, name, role):
+        insert = f"""INSERT INTO epicgroups(name, role) VALUES ( '{name}',
+        '{role}') RETURNING id, name, role;"""
+        self.cursor.execute(insert)
+        return self.cursor.fetchone()
+    
+    def fetch_all_groups(self):
+        query = "SELECT * FROM epicgroup"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    # def delete_particular_group(self, group_id):
+    #     query = "DELETE FROM epicgroup WHERE id = {}".format(group_id)
+    #     self.cursor.execute(query)
+    
+    # def add_user_to_group(self, id, user_id, user_role):
+        
+        
+
+
+    # def delete a group(self):
+    #     query = "DROP GROUP teachers"

@@ -192,18 +192,6 @@ def get_recieved_mail():
     return jsonify({"status": 200, 
                     "data": database.get_induviduals_inbox(reciever_id)})
 
-# @app.route('/api/v2/messages/unread', methods=['GET'])
-# @authentication.user_token
-# @swag_from('../apidocs/unread.yml', methods=['GET'])
-
-# def get_unread_mail():
-
-#     """
-#     view all messages whose status is sent to a particular reciever-id
-#     """
-#     reciever_id = get_id_from_header()
-#     return jsonify (database.get_unread_mail_from_inbox(reciever_id))
-
 
 @app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
 @authentication.user_token
@@ -227,4 +215,29 @@ def get_particular_mail(message_id):
 
     reciever_id = get_id_from_header()
     database.get_unread_mail_from_inbox
-    return jsonify(database.get_get_particular_message(message_id, reciever_id))
+    return jsonify(database.get_get_particular_message(
+        message_id, reciever_id))
+
+@app.route('/api/v2/groups', methods=['POST'])
+def create_group():
+    """route for registering a new user of teh application"""
+    data = request.get_json()
+
+    name = data.get('name')
+    role = data.get('role')
+    invalid = validators.validate_group_creation(name, role)
+    if invalid:
+        return jsonify({"status": 404, "error": invalid})
+    new_group = database.create_group(name, role)
+    return jsonify({"status": 201, "data": new_group})
+
+@app.route('/api/v2/groups', methods=['GET'])
+def fetch_groups():
+    all_groups = database.fetch_all_groups()
+
+@app.route('/api/v2/groups', methods=['GET'])
+def delete_groups():
+    all_groups = database.fetch_all_groups()
+
+
+

@@ -175,4 +175,17 @@ class Validators:
 
         # if not parent_message_id:
         #     return "please enter teh parnt "
-            
+    def validate_group_creation(self, name, role):
+        if isinstance(role, int):
+            return "role should be made up of letters"
+        if not name or name.strip() == "":
+            return"Enter name"
+        if not role or role.strip() == "":
+            return "Enter role"
+        if not name.isalpha():
+            return "name should be made up of letters"
+
+        if len(name) < 2:
+            return "name is too short"
+        if len(role) < 2:
+            return "role value is too short"
