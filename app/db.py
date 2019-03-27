@@ -189,6 +189,16 @@ class Database:
         query = "SELECT * FROM epicgroups"
         self.cursor.execute(query)
         return self.cursor.fetchall()
+   
+    def patch_group_name(self, group_id, group_name):
+        query = "UPDATE epicgroups SET name = '{}' WHERE id = '{}'\
+         RETURNING * ;".format(
+            group_name, group_id)
+        # query = "UPDATE  epicgroups SET name= '{}' WHERE id = {}.format(name, group_id)RETURNING id, name, role;
+        self.cursor.execute(query)
+        return self.cursor.fetchone()
+
+
 
     # def delete_particular_group(self, group_id):
     #     query = "DELETE FROM epicgroup WHERE id = {}".format(group_id)

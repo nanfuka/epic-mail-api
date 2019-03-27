@@ -218,6 +218,7 @@ def get_particular_mail(message_id):
     return jsonify(database.get_get_particular_message(
         message_id, reciever_id))
 
+
 @app.route('/api/v2/groups', methods=['POST'])
 def create_group():
     """route for registering a new user of teh application"""
@@ -231,14 +232,28 @@ def create_group():
     new_group = database.create_group(name, role)
     return jsonify({"status": 201, "data": new_group})
 
+
 @app.route('/api/v2/groups', methods=['GET'])
 def fetch_groups():
     all_groups = database.fetch_all_groups()
     return jsonify({"status": 200, "data": all_groups}) 
 
+
 @app.route('/api/v2/groups', methods=['GET'])
 def delete_groups():
     all_groups = database.fetch_all_groups()
+
+
+@app.route('/api/v2/groups/<int:group_id>/name', methods=['PATCH'])
+def change_group_name(group_id):
+    data = request.get_json()
+    name = data.get('name')
+
+    change = database.patch_group_name(group_id, name)
+
+    return jsonify({"status": 200, "data": change})
+
+
 
 
 
