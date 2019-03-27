@@ -56,10 +56,10 @@ def signup():
     if error_password:
         return jsonify({"status": 404, "error": error_password})
     register = database.signup(firstname=firstname,
-                                      lastname=lastname,
-                                      email=email,
-                                      password=password)
-    token = authentication.create_user_token(register['id'])                                  
+                               lastname=lastname,
+                               email=email,
+                               password=password)
+    token = authentication.create_user_token(register['id'])
     return jsonify({"status": 201,
                     "data": [{"token": token, "user": register}],
                     "message": "thanks for registering with Epic mail"})
@@ -99,9 +99,8 @@ def get_id_from_header():
 @app.route('/api/v2/message', methods=['POST'])
 @authentication.user_token
 @swag_from('../apidocs/message.yml', methods=['POST'])
-
 def create_message():
-    """The loggedin user can create a new email using this route"""
+    """The loggedin user can create a new mail using this route"""
     token = authentication.extract_token_from_header()
     senderid = authentication.decode_user_token_id(token)
     data = request.get_json()
@@ -118,12 +117,8 @@ def create_message():
     subject = data['subject']
     message = data['message']
     status = data['status']
-    sender_id= senderid 
+    sender_id = senderid
     reciever_id = data['reciever_id']
-    # created_mail =database.create_message(created_on=created_on, subject=subject, message=message, status=status, sender_id=sender_id, reciever_id=reciever_id)
-    # return jsonify(created_mail)
-    
-
 
     invalid_subject_message_status = validators.validate_subject(
         subject, message, status)
@@ -132,39 +127,49 @@ def create_message():
             "status": 400,
             "error": invalid_subject_message_status})
 
-
     valid_id = validators.validate_id(reciever_id)
     if valid_id:
         return jsonify({"status": 400, "error": valid_id})
-    
     new_mail = database.create_message(
-                                        created_on=created_on,
-                                           
-                                           subject=subject,
-                                           message=message,
-                                           status=status,
-                                           sender_id=sender_id, 
-                                           reciever_id=reciever_id
-                                           )
+        created_on=created_on,
+
+        subject=subject,
+        message=message,
+        status=status,
+        sender_id=sender_id,
+        reciever_id=reciever_id
+    )
     if status == "sent":
-        inbox = database.create_inbox(created_on=created_on, subject=subject, message=message, sender_id=sender_id, reciever_id=reciever_id, parent_message_id=new_mail['id'], status=status)
-    return jsonify({"status": 201, "data":[{"id":new_mail['id'], "created_on":new_mail['created_on'], "subject": new_mail['subject'], "message":new_mail['message'], "parent_message_id":new_mail['id'], "status":new_mail['status'] }]})
+        inbox = database.create_inbox(created_on=created_on,
+                                      subject=subject,
+                                      message=message,
+                                      sender_id=sender_id,
+                                      reciever_id=reciever_id,
+                                      parent_message_id=new_mail['id'],
+                                      status=status)
+    return jsonify({"status": 201,
+                    "data": [{"id": new_mail['id'],
+                              "created_on":new_mail['created_on'],
+                              "subject": new_mail['subject'],
+                              "message":new_mail['message'],
+                              "parent_message_id":new_mail['id'],
+                              "status":new_mail['status']}]})
+
 
 @app.route('/api/v1/messages/sent', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/sent.yml', methods=['GET'])
 def get_sent_mail():
-    
     """Route which fetches all mail sent by the current user"""
     sender_id = get_id_from_header()
-    
-    return jsonify({"status": 200, "data": database.get_all_sent_mail_by_a_user(sender_id)})
+    return jsonify({"status": 200,
+                    "data": database.get_all_sent_mail_by_a_user(sender_id)})
+
 
 @app.route('/api/v2/modify_status/<int:message_id>', methods=['PATCH'])
 @authentication.user_token
 @swag_from('../apidocs/sent.yml', methods=['GET'])
 def modify_message(message_id):
-    
     """the current user can modify the status of their message"""
     reciever_id = get_id_from_header()
     data = request.get_json()
@@ -175,19 +180,17 @@ def modify_message(message_id):
                         "message": "successfully modified the status"}]})
 
 
-
-
 @app.route('/api/v2/messages', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/recieved.yml', methods=['GET'])
-
 def get_recieved_mail():
     """
     reciever can view all mail sent to them marked
      sent with a recieverid of logged in user
     """
     reciever_id = get_id_from_header()
-    return jsonify ({"status": 200, "data":database.get_induviduals_inbox(reciever_id)})
+    return jsonify({"status": 200, 
+                    "data": database.get_induviduals_inbox(reciever_id)})
 
 # @app.route('/api/v2/messages/unread', methods=['GET'])
 # @authentication.user_token
@@ -205,26 +208,23 @@ def get_recieved_mail():
 @app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
 @authentication.user_token
 @swag_from('../apidocs/unread.yml', methods=['GET'])
-
 def get_delete_mail(message_id):
-
     """
     view all messages whose status is sent to a particular reciever-id
     """
     reciever_id = get_id_from_header()
     delete = database.delete_mail(message_id, reciever_id)
-    
-    return jsonify({"status":200, "message":"The email has been deleted successfully"})
-    
+
+    return jsonify({"status": 200,
+                    "message": "The email has been deleted successfully"})
+
 
 @app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/unread.yml', methods=['GET'])
-
 def get_particular_mail(message_id):
-
     """Route for retrieving a particular mail"""
 
     reciever_id = get_id_from_header()
+    database.get_unread_mail_from_inbox
     return jsonify(database.get_get_particular_message(message_id, reciever_id))
-
