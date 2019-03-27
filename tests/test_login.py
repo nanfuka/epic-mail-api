@@ -27,7 +27,7 @@ class Test_registration(BaseTestCase):
             self.assertEqual(response.status_code, 200)
                      
             data = json.loads(response.data)
-            self.assertEqual(data['error'], 'the email and password are invalid')
+            self.assertEqual(data['error'], 'the email and password you have entered are invalid')
 
     def test_login_without_email_field(self):
         """

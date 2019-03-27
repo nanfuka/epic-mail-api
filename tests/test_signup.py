@@ -21,9 +21,9 @@ class Test_registration(BaseTestCase):
             self.assertEqual(data['status'], 201)
             self.assertEqual(
                 data['message'], 'thanks for registering with Epic mail')
-            self.assertEqual(data['data'][0]['firstname'], 'deb')
-            self.assertEqual(data['data'][0]['lastname'], 'kalungi')
-            self.assertEqual(data['data'][0]['email'], 'deb@gmal.com')
+            self.assertEqual(data['data'][0]['user']['firstname'], 'deb')
+            self.assertEqual(data['data'][0]['user']['lastname'], 'kalungi')
+            self.assertEqual(data['data'][0]['user']['email'], 'deb@gmal.com')
 
     def test_signup_without_firstname(self):
         """
