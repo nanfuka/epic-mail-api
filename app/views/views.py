@@ -5,10 +5,10 @@ from functools import wraps
 import jwt
 import datetime
 from flasgger import Swagger, swag_from
-
+from app.db import Database
 from app.validators import Validators
 from app.auth import Authentication
-
+import datetime
 
 app = Flask(__name__)
 
@@ -16,6 +16,7 @@ swagger = Swagger(app)
 validators = Validators()
 user_controller = UserControllers()
 mail_controller = MailController()
+database = Database()
 
 authentication = Authentication()
 
@@ -27,7 +28,7 @@ def index():
     return "welcome to the Epic mail Application "
 
 
-@app.route('/api/v1/auth/signup', methods=['POST'])
+@app.route('/api/v2/auth/signup', methods=['POST'])
 @swag_from('../apidocs/signup.yml', methods=['POST'])
 def signup():
     """route for registering a new user of teh application"""
@@ -54,16 +55,17 @@ def signup():
         return jsonify({"status": 404, "error": error_email})
     if error_password:
         return jsonify({"status": 404, "error": error_password})
-    register = user_controller.signup(firstname=firstname,
-                                      lastname=lastname,
-                                      email=email,
-                                      password=password)
+    register = database.signup(firstname=firstname,
+                               lastname=lastname,
+                               email=email,
+                               password=password)
+    token = authentication.create_user_token(register['id'])
     return jsonify({"status": 201,
-                    "data": [register],
+                    "data": [{"token": token, "user": register}],
                     "message": "thanks for registering with Epic mail"})
 
 
-@app.route('/api/v1/auth/login', methods=['POST'])
+@app.route('/api/v2/auth/login', methods=['POST'])
 @swag_from('../apidocs/login.yml', methods=['POST'])
 def login():
     """
@@ -94,12 +96,11 @@ def get_id_from_header():
     return senderid
 
 
-@app.route('/api/v1/message', methods=['POST'])
+@app.route('/api/v2/message', methods=['POST'])
 @authentication.user_token
 @swag_from('../apidocs/message.yml', methods=['POST'])
-
 def create_message():
-    """The loggedin user can create a new email using this route"""
+    """The loggedin user can create a new mail using this route"""
     token = authentication.extract_token_from_header()
     senderid = authentication.decode_user_token_id(token)
     data = request.get_json()
@@ -107,15 +108,17 @@ def create_message():
                                                 'message',
                                                 'status',
                                                 'reciever_id',
+                                                'parent_message_id',
                                                 list(data.keys()))
     if validate:
         return jsonify({"status": 400, "error": validate})
 
+    created_on = datetime.datetime.now()
     subject = data['subject']
     message = data['message']
-    reciever_id = data['reciever_id']
     status = data['status']
     sender_id = senderid
+    reciever_id = data['reciever_id']
 
     invalid_subject_message_status = validators.validate_subject(
         subject, message, status)
@@ -127,72 +130,114 @@ def create_message():
     valid_id = validators.validate_id(reciever_id)
     if valid_id:
         return jsonify({"status": 400, "error": valid_id})
+    new_mail = database.create_message(
+        created_on=created_on,
 
-    new_mail = mail_controller.create_mail(reciever_id=reciever_id,
-                                           sender_id=senderid,
-                                           subject=subject,
-                                           message=message,
-                                           status=status)
-    return jsonify({"status": 201, "data": [new_mail]})
+        subject=subject,
+        message=message,
+        status=status,
+        sender_id=sender_id,
+        reciever_id=reciever_id
+    )
+    if status == "sent":
+        inbox = database.create_inbox(created_on=created_on,
+                                      subject=subject,
+                                      message=message,
+                                      sender_id=sender_id,
+                                      reciever_id=reciever_id,
+                                      parent_message_id=new_mail['id'],
+                                      status=status)
+    return jsonify({"status": 201,
+                    "data": [{"id": new_mail['id'],
+                              "created_on":new_mail['created_on'],
+                              "subject": new_mail['subject'],
+                              "message":new_mail['message'],
+                              "parent_message_id":new_mail['id'],
+                              "status":new_mail['status']}]})
 
 
 @app.route('/api/v1/messages/sent', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/sent.yml', methods=['GET'])
 def get_sent_mail():
-    
     """Route which fetches all mail sent by the current user"""
-    sender_id = senderid = get_id_from_header()
-    return jsonify(mail_controller.get_all_mail_sent_by_a_user(sender_id))
+    sender_id = get_id_from_header()
+    return jsonify({"status": 200,
+                    "data": database.get_all_sent_mail_by_a_user(sender_id)})
 
 
-@app.route('/api/v1/messages', methods=['GET'])
+@app.route('/api/v2/modify_status/<int:message_id>', methods=['PATCH'])
+@authentication.user_token
+@swag_from('../apidocs/sent.yml', methods=['GET'])
+def modify_message(message_id):
+    """the current user can modify the status of their message"""
+    reciever_id = get_id_from_header()
+    data = request.get_json()
+    status = data.get('status')
+    modified = database.modify_message_status(status, reciever_id, message_id)
+    return jsonify({"status": 200, "data":
+                    [{"id": message_id,
+                        "message": "successfully modified the status"}]})
+
+
+@app.route('/api/v2/messages', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/recieved.yml', methods=['GET'])
-
 def get_recieved_mail():
     """
     reciever can view all mail sent to them marked
      sent with a recieverid of logged in user
     """
     reciever_id = get_id_from_header()
-    return jsonify(
-        mail_controller.get_all_recieved_messages_of_a_user(reciever_id))
-
-
-@app.route('/api/v1/messages/unread', methods=['GET'])
-@authentication.user_token
-@swag_from('../apidocs/unread.yml', methods=['GET'])
-
-def get_unread_mail():
-
-    """
-    view all messages whose status is sent to a particular reciever-id
-    """
-    reciever_id = get_id_from_header()
-    return jsonify(mail_controller.get_all_unread_mail_for_a_user(reciever_id))
+    return jsonify({"status": 200, 
+                    "data": database.get_induviduals_inbox(reciever_id)})
 
 
 @app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
 @authentication.user_token
 @swag_from('../apidocs/unread.yml', methods=['GET'])
-
 def get_delete_mail(message_id):
-
     """
     view all messages whose status is sent to a particular reciever-id
     """
     reciever_id = get_id_from_header()
-    return jsonify(mail_controller.delete_specific_users_email(message_id, reciever_id))
+    delete = database.delete_mail(message_id, reciever_id)
+
+    return jsonify({"status": 200,
+                    "message": "The email has been deleted successfully"})
+
 
 @app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/unread.yml', methods=['GET'])
-
 def get_particular_mail(message_id):
-
     """Route for retrieving a particular mail"""
 
     reciever_id = get_id_from_header()
-    return jsonify(mail_controller.get_specific_users_email(message_id, reciever_id))
+    database.get_unread_mail_from_inbox
+    return jsonify(database.get_get_particular_message(
+        message_id, reciever_id))
+
+@app.route('/api/v2/groups', methods=['POST'])
+def create_group():
+    """route for registering a new user of teh application"""
+    data = request.get_json()
+
+    name = data.get('name')
+    role = data.get('role')
+    invalid = validators.validate_group_creation(name, role)
+    if invalid:
+        return jsonify({"status": 404, "error": invalid})
+    new_group = database.create_group(name, role)
+    return jsonify({"status": 201, "data": new_group})
+
+@app.route('/api/v2/groups', methods=['GET'])
+def fetch_groups():
+    all_groups = database.fetch_all_groups()
+
+@app.route('/api/v2/groups', methods=['GET'])
+def delete_groups():
+    all_groups = database.fetch_all_groups()
+
+
 
