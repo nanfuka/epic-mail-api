@@ -331,28 +331,36 @@ def delete_user_from_particular_group(group_id, user_id):
 
 
 @app.route('/api/v2/groups/<int:group_id>/messages', methods=['POST'])
-# @authentication.user_token
-# @swag_from('../apidocs/message.yml', methods=['POST'])
+@authentication.user_token
 def create_group_message(group_id):
-    """The loggedin user can create a new mail using this route"""
-    # token = authentication.extract_token_from_header()
-    # senderid = authentication.decode_user_token_id(token)
+    """The loggedin user can create a new mail  and send it to the group using this route"""
+    admin = get_id_from_header()
+    valid_group_id = database.check_if_group_id_exists(group_id)
+    if valid_group_id:
+        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+            admin = get_id_from_header()
+            data = request.get_json()
+            created_on = datetime.datetime.now()
+            subject = data['subject']
+            message = data['message']
+            status = data['status']
+            sender_id = admin
+            group_id = group_id
 
-    data = request.get_json()
-    created_on = datetime.datetime.now()
-    subject = data['subject']
-    message = data['message']
-    status = data['status']
-    sender_id = 1
-    group_id = group_id
+            invalid_data = validators.validate_group_mails(subject, message, status)
+            if invalid_data:
+                return jsonify({"status":404, "message":invalid_data}) 
 
-    new_mail = database.create_groupmessage(
-        created_on=created_on,
+            new_mail = database.create_groupmessage(
+                created_on=created_on,
 
-        subject=subject,
-        message=message,
-        status=status,
-        sender_id=sender_id,
-        group_id=group_id
-    )
-    return jsonify({"status": 201, "data": [{"id": new_mail['id'], "createdOn":new_mail['created_on'], "subject":new_mail['subject'], "message":new_mail['message'], "parentMessageId":new_mail['id'], "status":new_mail['status']}]})
+                subject=subject,
+                message=message,
+                status=status,
+                sender_id=sender_id,
+                
+                group_id=group_id
+            )
+            return jsonify({"status": 201, "data": [{"id": new_mail['id'], "createdOn":new_mail['created_on'], "subject":new_mail['subject'], "message":new_mail['message'], "parentMessageId":new_mail['id'], "status":new_mail['status']}]})
+        return jsonify({"status": 404, "error": "you can only modify a group which you created"})
+    return jsonify({"status": 404, "error": "the group is non existant"})

@@ -226,5 +226,25 @@ class Validators:
             return "User role should be a string"
         if len(userrole)<2:
             return "Enter a clear to understand userrole"
-        
-        
+
+    def validate_group_mails(self, subject, message, status):
+        if isinstance(subject, int):
+            return "subject should be made up of letters"
+        if not subject or subject.strip() == "":
+            return"Enter name"
+        if not subject.isalpha():
+            return "subject should be made up of letters"
+        if len(subject) < 10:
+            return "subject is too short"
+
+
+        if isinstance(message, int):
+            return "message should be made up of letters"
+        if not message or message.strip() == "":
+            return"Enter message"
+        if len(message) < 2:
+            return "subject is too short"
+
+        if status != "draft" or status =="sent":
+            return "status should of mail should either be sent or in draft"
+            
