@@ -189,7 +189,7 @@ def get_recieved_mail():
      sent with a recieverid of logged in user
     """
     reciever_id = get_id_from_header()
-    return jsonify({"status": 200, 
+    return jsonify({"status": 200,
                     "data": database.get_induviduals_inbox(reciever_id)})
 
 
@@ -218,26 +218,149 @@ def get_particular_mail(message_id):
     return jsonify(database.get_get_particular_message(
         message_id, reciever_id))
 
-@app.route('/api/v2/groups', methods=['POST'])
-def create_group():
-    """route for registering a new user of teh application"""
-    data = request.get_json()
 
+@app.route('/api/v2/groups', methods=['POST'])
+@authentication.user_token
+def create_group():
+    """With this route, a logged in user can create a new 
+    group and become the owner of that group
+    """
+    admin = get_id_from_header()
+    data = request.get_json()
     name = data.get('name')
     role = data.get('role')
-    invalid = validators.validate_group_creation(name, role)
+    admin = admin
+    invalid = validators.validate_group_creation(name=name, role=role)
     if invalid:
         return jsonify({"status": 404, "error": invalid})
-    new_group = database.create_group(name, role)
-    return jsonify({"status": 201, "data": new_group})
+    new_group = database.create_groups(admin, name, role)
+
+    return jsonify({"status": 201, "data": [new_group]})
+
 
 @app.route('/api/v2/groups', methods=['GET'])
+@authentication.user_token
 def fetch_groups():
-    all_groups = database.fetch_all_groups()
+    """The logged in user can view all the 
+    groups that they have created 
+    """
+    admin = get_id_from_header()
+    all_groups = database.fetch_all_groups(admin)
+    if all_groups:
+        return jsonify({"status": 200, "data": all_groups})
+    return jsonify({"message": "You have not yet created any groups"})
 
-@app.route('/api/v2/groups', methods=['GET'])
-def delete_groups():
-    all_groups = database.fetch_all_groups()
+
+@app.route('/api/v2/groupss/<int:group_id>', methods=['DELETE'])
+@authentication.user_token
+def delete_groups(group_id):
+    """the admin of the group can delete the group with a particular group_id"""
+    admin = get_id_from_header()
+    valid_group_id = database.check_if_group_id_exists(group_id)
+    if valid_group_id:
+        delete = database.delete_particular_groups(group_id, admin)
+        return jsonify({"status": 200, "data": [{"message": "The group has been deleted"}]})
+    return jsonify({"status": 400, "error": "the group with the supplied group_id is not in the system"})
 
 
+@app.route('/api/v2/groups/<int:group_id>/name', methods=['PATCH'])
+@authentication.user_token
+def change_group_name(group_id):
+    """Admin can change the name of the group"""
+    admin = get_id_from_header()
+    
+    valid_group_id = database.check_if_group_id_exists(group_id)
+    if valid_group_id:
+        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
 
+            data = request.get_json()
+            name = data.get('name')
+            invalid_name = validators.validate_modify(name)
+            if invalid_name:
+                return jsonify({"status": 400, "message": invalid_name})
+            change = database.patch_group_name(group_id, name)
+            if change:
+                return jsonify({"status": 200, "data": change})
+        return jsonify({"status": 404, "error": "you can only modify a group which you created"})
+    return jsonify({"status": 404, "error": "the group is non existant"})
+
+
+def get_admin_json(admin):
+    admin = get_id_from_header()
+    return {"admin":str(admin)}
+
+@app.route('/api/v2/groups/<int:group_id>/users', methods=['POST'])
+@authentication.user_token
+def adduser_to_group(group_id):
+    """An admin can add members to a group which they created"""
+    admin = get_id_from_header()
+
+    valid_group_id = database.check_if_group_id_exists(group_id)
+    if valid_group_id:
+        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+
+            data = request.get_json()
+            group_id = group_id
+            userid = data.get('userid')
+            userrole = data.get('userrole')
+            
+            invalid_inputs = validators.validate_add_user_to_group(userid, userrole)
+            if invalid_inputs:
+                return jsonify({"status": 400, "error": invalid_inputs})
+
+            add_user = database.create_group(group_id, userid, userrole)
+            all_members_of_this_group = database.get_all_group_members(group_id)
+            return jsonify({"status": 201, "data": all_members_of_this_group})
+        return jsonify({"status": 404, "error": "you can only modify a group which you created"})
+    return jsonify({"status": 404, "error": "the group is non existant"})
+
+
+@app.route('/api/v2/groups/<int:group_id>/users/<int:user_id>', methods=['DELETE'])
+@authentication.user_token
+def delete_user_from_particular_group(group_id, user_id):
+    """Route to delete a particular user from the group"""
+    admin = get_id_from_header()
+    valid_group_id = database.check_if_group_id_exists(group_id)
+    if valid_group_id:
+        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+
+            delete_user_from_group = database.delete_user_from_specific_group(user_id, group_id)
+            return jsonify({"status": 201, "data": "The user has been deleted from the group"})
+        return jsonify({"status": 404, "error": "you can only modify a group which you created"})
+    return jsonify({"status": 404, "error": "the group is non existant"})
+
+
+@app.route('/api/v2/groups/<int:group_id>/messages', methods=['POST'])
+@authentication.user_token
+def create_group_message(group_id):
+    """The loggedin user can create a new mail  and send it to the group using this route"""
+    admin = get_id_from_header()
+    valid_group_id = database.check_if_group_id_exists(group_id)
+    if valid_group_id:
+        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+            admin = get_id_from_header()
+            data = request.get_json()
+            created_on = datetime.datetime.now()
+            subject = data['subject']
+            message = data['message']
+            status = data['status']
+            sender_id = admin
+            group_id = group_id
+
+            invalid_data = validators.validate_group_mails(subject, message, status)
+            if invalid_data:
+                return jsonify({"status":404, "message":invalid_data}) 
+
+            new_mail = database.create_groupmessage(
+                created_on=created_on,
+
+                subject=subject,
+                message=message,
+                status=status,
+                sender_id=sender_id,
+                
+                group_id=group_id
+            )
+            return jsonify({"status": 201, "data": [{"id": new_mail['id'], "createdOn":new_mail['created_on'], "subject":new_mail['subject'], "message":new_mail['message'], "parentMessageId":new_mail['id'], "status":new_mail['status']}]})
+        return jsonify({"status": 404, "error": "you can only modify a group which you created"})
+    return jsonify({"status": 404, "error": "the group is non existant"})

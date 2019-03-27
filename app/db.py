@@ -3,6 +3,7 @@ from psycopg2.extras import RealDictCursor
 from pprint import pprint
 import os
 from os import environ
+from flask import Flask, jsonify, request, json
 
 
 class Database:
@@ -32,6 +33,9 @@ class Database:
 
         table_messages = """CREATE TABLE IF NOT EXISTS messages(ID SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer, reciever_id  integer);"""
         self.cursor.execute(table_messages)
+        table_groupmessages = """CREATE TABLE IF NOT EXISTS groupmessages(id SERIAL PRIMARY KEY NOT NULL, group_id integer, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer);"""
+        self.cursor.execute(table_groupmessages)
+
         table_inbox = """CREATE TABLE IF NOT EXISTS inbox(id SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR NOT NULL, sender_id integer, reciever_id integer, parent_message_id integer,  status VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_inbox)
 
@@ -44,12 +48,13 @@ class Database:
         table_draft = """CREATE TABLE IF NOT EXISTS draft(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_sent)
 
-        # table_inbox = """CREATE TABLE IF NOT EXISTS inbox(id SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer, reciever_id  integer)"""
-        # table_inbox = """CREATE TABLE IF NOT EXISTS inbox(id SERIAL PRIMARY KEY NOT NULL, message_id INTEGER REFERENCES messages(ID), created_on DATE, reciever_id integer, status VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_inbox)
 
-        table_group = """CREATE TABLE IF NOT EXISTS epicgroups(id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, role VARCHAR(20) NOT NULL);"""
+        table_group = """CREATE TABLE IF NOT EXISTS epicgroups(id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, admin VARCHAR(20) NOT NULL, role VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_group)
+
+        table_cluster = """CREATE TABLE IF NOT EXISTS clusters(id SERIAL PRIMARY KEY NOT NULL, group_id integer, userid integer, userrole VARCHAR(20) NOT NULL);"""
+        self.cursor.execute(table_cluster)
 
         table_groupmembers = """CREATE TABLE IF NOT EXISTS groupmembers(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_groupmembers)
@@ -77,6 +82,11 @@ class Database:
 
     def create_message(self, **kwargs):
         insert = f"""INSERT INTO messages(subject, message, status) VALUES ( '{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("status")}') RETURNING ID, subject, message, status;"""
+        self.cursor.execute(insert)
+        return self.cursor.fetchone()
+
+    def create_groupmessage(self, **kwargs):
+        insert = f"""INSERT INTO groupmessages(group_id, subject, message, status, created_on) VALUES ( '{kwargs.get("group_id")}','{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("status")}', '{kwargs.get("created_on")}') RETURNING id, subject, message, status, created_on;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
 
@@ -110,13 +120,7 @@ class Database:
         insert = f"""INSERT INTO messages(created_on, subject, message, status, sender_id, reciever_id) VALUES ( '{kwargs.get("created_on")}', '{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("status")}', {kwargs.get("sender_id")}, {kwargs.get("reciever_id")}) RETURNING ID, created_on, subject, message, status;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
-    # def get_parent_message_id(self, message_id):
-    #     if self.get_all_message_id:
 
-        #     query = "SELECT * FROM messages WHERE incident_id = {} and \
-        #     incident_type ='{}'".format(incident_id, incident_type)
-        # db.cursor.execute(query)
-        # return db.cursor.fetchall()
     def get_all_mails(self):
         query = f"""SELECT * FROM messages"""
         self.cursor.execute(query)
@@ -179,20 +183,82 @@ class Database:
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    def create_group(self, name, role):
-        insert = f"""INSERT INTO epicgroups(name, role) VALUES ( '{name}',
-        '{role}') RETURNING id, name, role;"""
+    def create_groups(self, admin, name, role):
+        """This function creates a new group 
+        and inserts the new groups data into the database
+        """
+        insert = f"""INSERT INTO epicgroups( admin, name, role) VALUES ( '{admin}','{name}', '{role}') RETURNING id, name, role;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
-    
-    def fetch_all_groups(self):
-        query = "SELECT * FROM epicgroup"
+   
+    def fetch_all_groups(self, admin):
+        query = "SELECT id, name, role FROM epicgroups WHERE admin = '{}'".format(admin)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+   
+    def patch_group_name(self, group_id, group_name):
+        query = "UPDATE epicgroups SET name = '{}' WHERE id = '{}'\
+         RETURNING * ;".format(
+            group_name, group_id)
+        # query = "UPDATE  epicgroups SET name= '{}' WHERE id = {}.format(name, group_id)RETURNING id, name, role;
+        self.cursor.execute(query)
+        return self.cursor.fetchone()
+
+    def delete_particular_groups(self, group_id, admin):
+        """Method to delete a particular group from the database"""
+        # if len(self.check_if_group_id_exists(group_id)) > 1:
+        query = "DELETE FROM epicgroups WHERE id = '{}' AND admin = '{}'".format(group_id, admin)
+        self.cursor.execute(query)
+        # return jsonify({"status": 400, "error": "There is no such group in the system"})
+
+    def create_group(self, group_id, userid, userrole):
+        
+        """Function to add members to a group"""
+        insert = f"""INSERT INTO clusters(group_id, userid, userrole) VALUES ('{group_id}', '{userid}',
+        '{userrole}') RETURNING id, userid, userrole;"""
+        self.cursor.execute(insert)
+        return self.cursor.fetchone()
+
+    def get_all_group_members(self, group_id):
+        query = "SELECT id, userid, userrole FROM clusters WHERE group_id = '{}'".format(group_id)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    # def delete_particular_group(self, group_id):
-    #     query = "DELETE FROM epicgroup WHERE id = {}".format(group_id)
-    #     self.cursor.execute(query)
+    def delete_user_from_specific_group(self, userid, group_id):
+        query = "DELETE FROM clusters WHERE userid = {} AND group_id = {}".format(userid, group_id)
+        self.cursor.execute(query)
+
+    def get_all_groupnames(self, name):
+        """Method to check whether the
+         group name already exists
+        """
+        query = "SELECT * FROM epicgroups WHERE name = '{}'".format(name)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def check_if_group_id_exists(self, id):
+        """Method to check whether the
+         group id exists
+        """
+        query = "SELECT * FROM epicgroups WHERE id = '{}'".format(id)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def get_admin_of_a_group(self, group_id):
+        query = "SELECT admin FROM epicgroups WHERE id = '{}'".format(group_id)
+        self.cursor.execute(query)
+        return self.cursor.fetchone()
+
+    def check_user_available(self, user_id):
+        query = "SELECT * FROM users WHERE id = {}".format(user_id)
+        self.cursor.execute(query)
+        return self.cursor.fetchone()
+        
+
+
+
+
+
     
     # def add_user_to_group(self, id, user_id, user_role):
         

@@ -69,7 +69,6 @@ class Validators:
         if not isinstance(reciever_id, int):
             return "reciever_id should be a number"
 
-
         for mail in mail_list:
             if mail['reciever_id'] != reciever_id:
                 return "The submited reciever_id is not registered with the application.\
@@ -142,6 +141,7 @@ class Validators:
 
         if password not in lst:
             return 'password field must be present'
+
     # def get_specific_users_email(self, mail_id, reciever_id):
     #     """Function that retrieves a particular mail"""
 
@@ -158,7 +158,7 @@ class Validators:
     #                 "message": "There isn't any mail in the inbox"}
     def validate_parent_message_id(self, parent_message_id, message_id):
         mail_list = db.get_all_mails()
-        if parent_message_id!= massage_id:
+        if parent_message_id != massage_id:
             return "invalid parent_message_id"
         # if not mail_list:
         #     parent_message_id ==1
@@ -175,17 +175,76 @@ class Validators:
 
         # if not parent_message_id:
         #     return "please enter teh parnt "
-    def validate_group_creation(self, name, role):
-        if isinstance(role, int):
-            return "role should be made up of letters"
+    def validate_group_creation(self, **kwargs):
+        name = kwargs.get('name')
+        role = kwargs.get('role')
+        if isinstance(name, int):
+            return "name should be made up of letters"
         if not name or name.strip() == "":
             return"Enter name"
-        if not role or role.strip() == "":
-            return "Enter role"
         if not name.isalpha():
             return "name should be made up of letters"
+        if db.get_all_groupnames(name):
+            return "Name of group already taken, choose anotherone"
 
+        if isinstance(role, int):
+            return "role should be made up of letters"
+        if not role or role.strip() == "":
+            return"Enter role"
+        if not role.isalpha():
+            return "role should be made up of letters"
         if len(name) < 2:
             return "name is too short"
         if len(role) < 2:
             return "role value is too short"
+    
+    def validate_group_id(self, group_id):
+        if not db.check_if_group_id_exists(group_id):
+            return jsonify({"status": 404, "error": "the id you want to delete is not in the system"})
+
+    def validate_modify(self, name):
+        if isinstance(name, int):
+            return "name should be made up of letters"
+        if not name or name.strip() == "":
+            return"Enter name"
+        if not name.isalpha():
+            return "name should be made up of letters"
+        if db.get_all_groupnames(name):
+            return "Name of group already taken, choose anotherone"
+        if len(name) < 2:
+            return "name is too short"
+    def validate_add_user_to_group(self, user_id, userrole):
+        if not user_id:
+            return "Enter user_id"
+        if not isinstance(user_id, int):
+            return "The user_id should be a number"
+        if not db.check_user_available(user_id):
+            return "The user with that user_id is not registered with the application"
+        if not userrole:
+            return "Enter userrole"
+        if not isinstance(userrole, str):
+            return "User role should be a string"
+        if len(userrole)<2:
+            return "Enter a clear to understand userrole"
+
+    def validate_group_mails(self, subject, message, status):
+        if isinstance(subject, int):
+            return "subject should be made up of letters"
+        if not subject or subject.strip() == "":
+            return"Enter name"
+        if not subject.isalpha():
+            return "subject should be made up of letters"
+        if len(subject) < 10:
+            return "subject is too short"
+
+
+        if isinstance(message, int):
+            return "message should be made up of letters"
+        if not message or message.strip() == "":
+            return"Enter message"
+        if len(message) < 2:
+            return "subject is too short"
+
+        if status != "draft" or status =="sent":
+            return "status should of mail should either be sent or in draft"
+            
