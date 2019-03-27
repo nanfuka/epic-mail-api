@@ -244,6 +244,16 @@ def delete_groups():
     all_groups = database.fetch_all_groups()
 
 
+# @app.route('/api/v2/groups/<int:group_id>/name', methods=['PATCH'])
+# def change_group_name(group_id):
+#     data = request.get_json()
+#     name = data.get('name')
+
+#     change = database.patch_group_name(group_id, name)
+
+#     return jsonify({"status": 200, "data": change})
+
+
 @app.route('/api/v2/groups/<int:group_id>/name', methods=['PATCH'])
 def change_group_name(group_id):
     data = request.get_json()
@@ -254,6 +264,71 @@ def change_group_name(group_id):
     return jsonify({"status": 200, "data": change})
 
 
+# @app.route('/api/v2/groupss/<int:group_id>', methods=['DELETE'])
+# def delete_groups(group_id):
+#     delete = database.delete_particular_group(group_id)
+
+#     return jsonify({"status": 200, "data": [{"message": "The group has been deleted"}]})
+
+@app.route('/api/v2/groups/<int:group_id>/users', methods=['POST'])
+def adduser_to_group(group_id):
+    data = request.get_json()
+
+    group_id = group_id
+    userid = data.get('userid')
+    userrole = data.get('userrole')
+
+    add_user = database.create_group(group_id, userid, userrole)
+    all_members_of_this_group = database.get_all_group_members(group_id)
+    return jsonify({"status": 201, "data": all_members_of_this_group})
+
+@app.route('/api/v2/groups/<int:group_id>/users/<int:user_id>', methods=['DELETE'])
+def delete_user_from_particular_group(group_id, user_id):
+
+    delete_user_from_group = database.delete_user_from_specific_group(user_id, group_id)
+    return jsonify({"status": 201, "data": "The user has been deleted from the group"})
 
 
+@app.route('/api/v2/groups/<int:group_id>/users/<int:user_id>', methods=['DELETE'])
+def create_or_send_email_to_group(group_id, user_id):
 
+    delete_user_from_group = database.delete_user_from_specific_group(user_id, group_id)
+    return jsonify({"status": 201, "data": "The user has been deleted from the group"})
+    # for member in all_members_of_this_group:
+    #     print(member)
+        # return jsonify({"status": 200, "data": {"id":member['id'], "userId":member['userid'], "userRole":member['userrole']}})
+
+
+@app.route('/api/v2/groups/<int:group_id>/messages', methods=['POST'])
+# @authentication.user_token
+# @swag_from('../apidocs/message.yml', methods=['POST'])
+def create_group_message(group_id):
+    """The loggedin user can create a new mail using this route"""
+    # token = authentication.extract_token_from_header()
+    # senderid = authentication.decode_user_token_id(token)
+        
+    data = request.get_json()
+    created_on = datetime.datetime.now()
+    subject = data['subject']
+    message = data['message']
+    status = data['status']
+    sender_id = 1
+    group_id = group_id
+
+    new_mail = database.create_groupmessage(
+        created_on=created_on,
+
+        subject=subject,
+        message=message,
+        status=status,
+        sender_id=sender_id,
+        group_id=group_id
+    )
+    return jsonify({"status": 201,"data":[{"id":new_mail['id'], "createdOn":new_mail['created_on'], "subject":new_mail['subject'], "message":new_mail['message'], "parentMessageId":new_mail['id'], "status":new_mail['status']}]})
+    # return jsonify({"status": 201,
+    #                 "data": [{"id": new_mail['id']}])
+                            #   "created_on":new_mail['created_on'],
+                            #   "subject": new_mail['subject'],
+                            #   "message":new_mail['message'],
+                            #   "parent_message_id":new_mail['id'],
+                            #   "status":new_mail['status']}]})

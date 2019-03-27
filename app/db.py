@@ -32,6 +32,9 @@ class Database:
 
         table_messages = """CREATE TABLE IF NOT EXISTS messages(ID SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer, reciever_id  integer);"""
         self.cursor.execute(table_messages)
+        table_groupmessages = """CREATE TABLE IF NOT EXISTS groupmessages(id SERIAL PRIMARY KEY NOT NULL, group_id integer, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer);"""
+        self.cursor.execute(table_groupmessages)
+
         table_inbox = """CREATE TABLE IF NOT EXISTS inbox(id SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR NOT NULL, sender_id integer, reciever_id integer, parent_message_id integer,  status VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_inbox)
 
@@ -50,6 +53,9 @@ class Database:
 
         table_group = """CREATE TABLE IF NOT EXISTS epicgroups(id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, role VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_group)
+
+        table_cluster = """CREATE TABLE IF NOT EXISTS clusters(id SERIAL PRIMARY KEY NOT NULL, group_id integer, userid integer, userrole VARCHAR(20) NOT NULL);"""
+        self.cursor.execute(table_cluster)
 
         table_groupmembers = """CREATE TABLE IF NOT EXISTS groupmembers(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_groupmembers)
@@ -77,6 +83,11 @@ class Database:
 
     def create_message(self, **kwargs):
         insert = f"""INSERT INTO messages(subject, message, status) VALUES ( '{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("status")}') RETURNING ID, subject, message, status;"""
+        self.cursor.execute(insert)
+        return self.cursor.fetchone()
+
+    def create_groupmessage(self, **kwargs):
+        insert = f"""INSERT INTO groupmessages(group_id, subject, message, status, created_on) VALUES ( '{kwargs.get("group_id")}','{kwargs.get("subject")}', '{kwargs.get("message")}', '{kwargs.get("status")}', '{kwargs.get("created_on")}') RETURNING id, subject, message, status, created_on;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
 
@@ -184,6 +195,7 @@ class Database:
         '{role}') RETURNING id, name, role;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
+
     
     def fetch_all_groups(self):
         query = "SELECT * FROM epicgroups"
@@ -198,11 +210,27 @@ class Database:
         self.cursor.execute(query)
         return self.cursor.fetchone()
 
+    def delete_particular_groups(self, group_id):
+        query = "DELETE FROM epicgroups WHERE id = {}".format(group_id)
+        self.cursor.execute(query)
+
+    def create_group(self, group_id, userid, userrole):
+        insert = f"""INSERT INTO clusters(group_id, userid, userrole) VALUES ('{group_id}', '{userid}',
+        '{userrole}') RETURNING id, userid, userrole;"""
+        self.cursor.execute(insert)
+        return self.cursor.fetchone()
+
+    def get_all_group_members(self, group_id):
+        query = "SELECT id, userid, userrole FROM clusters WHERE group_id = '{}'".format(group_id)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def delete_user_from_specific_group(self, userid, group_id):
+        query = "DELETE FROM clusters WHERE userid = {} AND group_id = {}".format(userid, group_id)
+        self.cursor.execute(query)
 
 
-    # def delete_particular_group(self, group_id):
-    #     query = "DELETE FROM epicgroup WHERE id = {}".format(group_id)
-    #     self.cursor.execute(query)
+
     
     # def add_user_to_group(self, id, user_id, user_role):
         
