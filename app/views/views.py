@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, json
-from app.controllers.user_controllers import UserControllers
-from app.controllers.mail_controllers import MailController
+# from app.controllers.user_controllers import UserControllers
+# from app.controllers.mail_controllers import MailController
 from functools import wraps
 import jwt
 import datetime
@@ -14,8 +14,8 @@ app = Flask(__name__)
 
 swagger = Swagger(app)
 validators = Validators()
-user_controller = UserControllers()
-mail_controller = MailController()
+# user_controller = UserControllers()
+# mail_controller = MailController()
 database = Database()
 
 authentication = Authentication()
@@ -50,11 +50,11 @@ def signup():
     error_password = validators.validate_password(password)
 
     if error_name:
-        return jsonify({"status": 404, "error": error_name})
+        return jsonify({"status": 400, "error": error_name})
     if error_email:
-        return jsonify({"status": 404, "error": error_email})
+        return jsonify({"status": 400, "error": error_email})
     if error_password:
-        return jsonify({"status": 404, "error": error_password})
+        return jsonify({"status": 400, "error": error_password})
     register = database.signup(firstname=firstname,
                                lastname=lastname,
                                email=email,
@@ -190,15 +190,15 @@ def get_unread_mail():
     view all messages in the inbox whose status is not read
     """
     reciever_id = get_id_from_header()
-    status = "unread"   
+    status = "unread"
     unread = database.get_unread_mail_from_inbox(status, reciever_id)
     if unread:
         return jsonify({"status": 200, "data": unread})
 
     return jsonify({
         "status": 200,
-        "message": "you do not have any unread mail in you inbox"
-        })
+        "message": "you do not have any unread mail in your inbox"
+    })
 
 
 @app.route('/api/v2/messages/deleted/<int:message_id>', methods=['DELETE'])
@@ -210,14 +210,14 @@ def get_delete_mail(message_id):
     """
     reciever_id = get_id_from_header()
     delete = database.delete_mail(message_id, reciever_id)
-    if database.check_if_message_id_exists(message_id):    
+    if database.check_if_message_id_exists(message_id):
         delete
         return jsonify({
             "status": 200,
             "data": [{"message":
                       "The email has been deleted successfully"}]})
     return jsonify({
-        "status": 200,
+        "status": 404,
         "message": "the message with supplied message_id is not available"})
 
 
@@ -229,15 +229,15 @@ def get_particular_mail(message_id):
 
     reciever_id = get_id_from_header()
     mail = database.get_particular_message(message_id, reciever_id)
-    if database.check_if_message_id_exists(message_id):    
+    if database.check_if_message_id_exists(message_id):
         if mail:
             return jsonify({"status": 200, "data": [mail]})
         return jsonify({
-            "status": 200,
+            "status": 404,
             "message": "the message with supplied message_id is not available"
-            })
+        })
     return jsonify({
-        "status": 400,
+        "status": 404,
         "error": "that message_id is not in the system"})
 
 
@@ -254,7 +254,7 @@ def create_group():
     admin = admin
     invalid = validators.validate_group_creation(name=name, role=role)
     if invalid:
-        return jsonify({"status": 404, "error": invalid})
+        return jsonify({"status": 400, "error": invalid})
     new_group = database.create_groups(admin, name, role)
 
     return jsonify({"status": 201, "data": [new_group]})
@@ -271,7 +271,7 @@ def fetch_groups():
     if all_groups:
         return jsonify({"status": 200, "data": all_groups})
     return jsonify({"status": 200,
-                   "message": "You have not yet created any groups"})
+                    "message": "You have not yet created any groups"})
 
 
 @app.route('/api/v2/groupss/<int:group_id>', methods=['DELETE'])
@@ -289,7 +289,7 @@ def delete_groups(group_id):
             "status": 200,
             "data": [{"message": "The group has been deleted"}]})
     return jsonify({
-        "status": 400,
+        "status": 404,
         "error": "the group with the supplied group_id is not in the system"})
 
 
@@ -298,7 +298,7 @@ def delete_groups(group_id):
 def change_group_name(group_id):
     """Admin can change the name of the group"""
     admin = get_id_from_header()
-    
+
     valid_group_id = database.check_if_group_id_exists(group_id)
     if valid_group_id:
         if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
@@ -312,10 +312,10 @@ def change_group_name(group_id):
             if change:
                 return jsonify({"status": 200, "data": change})
         return jsonify({
-            "status": 404,
+            "status": 40,
             "error": "you can only modify a group which you created"})
     return jsonify({"status": 404,
-                    "error": "the group is non existant"})
+                    "error": "the group is not available"})
 
 
 def get_admin_json(admin):
@@ -337,7 +337,7 @@ def adduser_to_group(group_id):
             group_id = group_id
             userid = data.get('userid')
             userrole = data.get('userrole')
-            
+
             invalid_inputs = validators.validate_add_user_to_group(
                 userid, userrole)
             if invalid_inputs:
@@ -370,7 +370,7 @@ def delete_user_from_particular_group(group_id, user_id):
                 "data": "The user has been deleted from the group"})
         return jsonify({
             "status": 404,
-            "error": "you can only modify a group which you created"})
+            "error": "You are not authorised to modify this group"})
     return jsonify({"status": 404, "error": "the group is non existant"})
 
 
@@ -397,7 +397,7 @@ def create_group_message(group_id):
             invalid_data = validators.validate_group_mails(
                 subject, message, status)
             if invalid_data:
-                return jsonify({"status": 404, "message": invalid_data}) 
+                return jsonify({"status": 400, "message": invalid_data})
 
             new_mail = database.create_groupmessage(
                 created_on=created_on,
@@ -406,18 +406,18 @@ def create_group_message(group_id):
                 message=message,
                 status=status,
                 sender_id=sender_id,
-                
+
                 group_id=group_id
             )
             return jsonify({"status": 201,
                             "data": [{"id": new_mail['id'],
-                                     "createdOn":new_mail['created_on'],
+                                      "createdOn":new_mail['created_on'],
                                       "subject":new_mail['subject'],
                                       "message":new_mail['message'],
                                       "parentMessageId":new_mail['id'],
                                       "status":new_mail['status']}]})
         return jsonify({
             "status": 404,
-            "error": "you can only send messages to  a group which you created"
-            })
+            "error": "you are not authosrised to modify this group"
+        })
     return jsonify({"status": 404, "error": "the group is non existant"})

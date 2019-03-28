@@ -3,22 +3,37 @@ from app.views.views import app
 import unittest
 import json
 
-
+database = Database()
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
-        """
-        initialise the test runner
-        """
-        self.client = app.test_client(self)
-        self.database = Database()
-        self.database.create_tables()
+        self.app = app
+        self.client = self.app.test_client()
 
     def tearDown(self):
-        """
-        Drop the database data
-        """
-        self.database.cursor.execute("DROP TABLE epicgroups")
-        self.database.cursor.execute("DROP TABLE users")
+        database.drop_table('groupmessages')
+        database.drop_table('groupmembers')
+        database.drop_table('sent')
+        database.drop_table('inbox')       
+        database.drop_table('epicgroups')
+        database.drop_table('clusters')
+        database.drop_table('messages')
+        database.drop_table('users')
+
+        database.create_tables()
+    # def setUp(self):
+    #     """
+    #     initialise the test runner
+    #     """
+    #     self.client = app.test_client(self)
+    #     self.database = Database()
+    #     self.database.create_tables()
+
+    # def tearDown(self):
+    #     """
+    #     Drop the database data
+    #     """
+    #     self.database.cursor.execute("DROP TABLE epicgroups")
+    #     self.database.cursor.execute("DROP TABLE users")
 
     def get_index_page(self):
         """

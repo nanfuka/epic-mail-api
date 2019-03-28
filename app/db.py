@@ -8,17 +8,18 @@ from flask import Flask, jsonify, request, json
 
 class Database:
     def __init__(self):
-        
+
         if os.getenv('DB_NAME') == 'epicmail':
             self.db_name = 'epicmail'
         self.db_name = 'epik'
 
         self.db_connect = psycopg2.connect(
-            database=self.db_name, user='postgres', password='', host='localhost', port=5432)
+            database=self.db_name, user='postgres', password='test',
+            host='localhost', port=5432)
         self.db_connect.autocommit = True
-        self.cursor = self.db_connect.cursor(cursor_factory = RealDictCursor)
+        self.cursor = self.db_connect.cursor(cursor_factory=RealDictCursor)
         self.create_tables()
-        
+
         #     if not environ.get('DATABASE_URL'):
         #         self.connection = psycopg2.connect(
         #             "postgres://postgres:test@localhost:5432/epicmail")
@@ -435,7 +436,7 @@ class Database:
         query = "SELECT * FROM inbox WHERE id = '{}'".format(id)
         self.cursor.execute(query)
         return self.cursor.fetchall()
-    
+
     def drop_table(self, table_name):
         drop_table = "DROP TABLE IF EXISTS {}".format(table_name)
         self.cursor.execute(drop_table)
