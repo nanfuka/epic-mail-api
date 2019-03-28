@@ -227,13 +227,13 @@ def get_particular_mail(message_id):
     """Route for retrieving a particular mail"""
 
     reciever_id = get_id_from_header()
-    mail = mail.get_particular_message(message_id, reciever_id)
+    particular_mail = mail.get_particular_message(message_id, reciever_id)
     if mail.check_if_message_id_exists(message_id):
-        if mail:
-            return jsonify({"status": 200, "data": [mail]})
+        if particular_mail:
+            return jsonify({"status": 200, "data": [particular_mail]})
         return jsonify({
             "status": 404,
-            "message": "the message with the given message_id is not available"
+            "message": "the message with supplied message_id is not available"
         })
     return jsonify({
         "status": 404,
