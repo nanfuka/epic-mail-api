@@ -1,9 +1,5 @@
 import re
-from app.controllers.user_controllers import UserControllers
-from app.models.users import user_list
-from app.models.mail import mail_list
 from app.db import Database
-user_controller = UserControllers()
 db = Database()
 
 
@@ -68,14 +64,6 @@ class Validators:
         user_list = db.get_all_users()
         if not isinstance(reciever_id, int):
             return "reciever_id should be a number"
-
-        for mail in mail_list:
-            if mail['reciever_id'] != reciever_id:
-                return "The submited reciever_id is not registered with the application.\
-                     please enter a valid reciever_id"
-
-        # if not isinstance(parentMessageId, int):
-        #     return "The parentMessageid should be an integer"
 
         if not reciever_id:
             return "Enter the reciever id please"

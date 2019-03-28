@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, json
-# from app.controllers.user_controllers import UserControllers
+from app.controllers.user_controllers import UserControllers
 # from app.controllers.mail_controllers import MailController
 from functools import wraps
 import jwt
@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 swagger = Swagger(app)
 validators = Validators()
-# user_controller = UserControllers()
+user_controller = UserControllers()
 # mail_controller = MailController()
 database = Database()
 
@@ -233,8 +233,8 @@ def get_particular_mail(message_id):
         if mail:
             return jsonify({"status": 200, "data": [mail]})
         return jsonify({
-            "status": 404,
-            "message": "the message with supplied message_id is not available"
+            "status": 400,
+            "message": "the message with the given message_id is not available"
         })
     return jsonify({
         "status": 404,
