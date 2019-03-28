@@ -14,14 +14,12 @@ class BaseTestCase(unittest.TestCase):
         self.database.create_tables()
 
     def tearDown(self):
-        """
-        Drop the database data and remove session
-        """
-        # self.database.session.remove()
-        self.database.drop_all()
-        
-        # self.database.cursor.execute("DROP TABLE users")
+    #     """
+    #     Drop the database data and remove session
+    #     """
         # self.database.cursor.execute("DROP TABLE messages")
+        self.database.cursor.execute("DROP TABLE users")
+
     def get_index_page(self):
         """
         Function to create an index page
