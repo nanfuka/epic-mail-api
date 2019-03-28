@@ -133,4 +133,6 @@ class Database:
             created_on DATE, sender_id integer);"""
         self.cursor.execute(table_inbox)
 
-
+    def drop_table(self, table_name):
+        drop_table = "DROP TABLE IF EXISTS {}".format(table_name)
+        self.cursor.execute(drop_table)

@@ -15,16 +15,16 @@ class BaseTestCase(unittest.TestCase):
         self.client = self.app.test_client()
 
     def tearDown(self):
-        mail.drop_table('groupmessages')
-        mail.drop_table('groupmembers')
-        mail.drop_table('sent')
-        mail.drop_table('inbox')       
-        mail.drop_table('epicgroups')
-        mail.drop_table('clusters')
-        mail.drop_table('messages')
-        mail.drop_table('users')
+        database.drop_table('groupmessages')
+        database.drop_table('groupmembers')
+        database.drop_table('sent')
+        database.drop_table('inbox')       
+        database.drop_table('epicgroups')
+        database.drop_table('clusters')
+        database.drop_table('messages')
+        database.drop_table('users')
 
-        mail.create_tables()
+        database.create_tables()
 
     def get_index_page(self):
         """
