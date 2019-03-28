@@ -189,7 +189,7 @@ class Test_registration(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                'api/v1/auth/signup',
+                'api/v2/auth/signup',
                 data=json.dumps(dict(
                                     lastname="kalungi",
                                     email="deb@gmal.com",
@@ -200,6 +200,9 @@ class Test_registration(BaseTestCase):
 
             data = json.loads(response.data)
             self.assertEqual(data['error'], 'firstname field must be present')
+            self.assertEqual(
+                data['status'],
+                400)
 
     def test_signup_without_last_field(self):
         """
@@ -208,7 +211,7 @@ class Test_registration(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                'api/v1/auth/signup',
+                'api/v2/auth/signup',
                 data=json.dumps(dict(
                                     firstname="deb",
                                     email="deb@gmal.com",
@@ -219,6 +222,9 @@ class Test_registration(BaseTestCase):
 
             data = json.loads(response.data)
             self.assertEqual(data['error'], 'lastname field must be present')
+            self.assertEqual(
+                data['status'],
+                400)
 
     def test_signup_without_email_field(self):
         """
@@ -227,7 +233,7 @@ class Test_registration(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                'api/v1/auth/signup',
+                'api/v2/auth/signup',
                 data=json.dumps(dict(
                     firstname="deb",
                     lastname="kalungi",
@@ -238,6 +244,9 @@ class Test_registration(BaseTestCase):
 
             data = json.loads(response.data)
             self.assertEqual(data['error'], 'email field must be present')
+            self.assertEqual(
+                data['status'],
+                400)
 
     def test_signup_without_password_field(self):
         """
@@ -246,7 +255,7 @@ class Test_registration(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                'api/v1/auth/signup',
+                'api/v2/auth/signup',
                 data=json.dumps(dict(
                                 firstname="deb",
                                 lastname="kalungi",
@@ -257,6 +266,9 @@ class Test_registration(BaseTestCase):
 
             data = json.loads(response.data)
             self.assertEqual(data['error'], 'password field must be present')
+            self.assertEqual(
+                data['status'],
+                400)
 
     def test_signup_without_password_value(self):
         """
@@ -265,7 +277,7 @@ class Test_registration(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                'api/v1/auth/signup',
+                'api/v2/auth/signup',
                 data=json.dumps(dict(
                                     firstname="deb",
                                     lastname="kalungi",
@@ -277,6 +289,9 @@ class Test_registration(BaseTestCase):
 
             data = json.loads(response.data)
             self.assertEqual(data['error'], 'please enter your password')
+            self.assertEqual(
+                data['status'],
+                404)
 
     def test_signup_with_weak_password_value(self):
         """
@@ -285,7 +300,7 @@ class Test_registration(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                'api/v1/auth/signup',
+                'api/v2/auth/signup',
                 data=json.dumps(dict(
                                     firstname="deb",
                                     lastname="kalungi",
@@ -299,4 +314,7 @@ class Test_registration(BaseTestCase):
             self.assertEqual(
                 data['error'],
                 "weak password, please increase password strength")
+            self.assertEqual(
+                data['status'],
+                404)
     

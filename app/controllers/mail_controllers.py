@@ -2,14 +2,23 @@ import datetime
 import jwt
 from app.models.mail import Mail, mail_list
 from app.auth import Authentication
+from app.db import Database
 authentication = Authentication()
+database = Database()
 
-
+mail_list = database.get_all_mails()
 class MailController:
     def create_mail(self, **kwargs):
         """function for creating a new message"""
+        self.subject = kwargs.get('subject')
+        self.message = kwargs.get('message')
+        self.parentMessageId = kwargs.get('parentMessageId')
+        self.status = kwargs.get('status')
+        self.reciever_id = kwargs.get('reciever_id')
+        self.sender_id = kwargs.get('sender_id')
         mail = Mail(**kwargs)
-        new_mail = mail.get_dictionary()
+        # new_mail = mail.get_dictionary()
+        new_mail = database.create_message()
         message = {"id": new_mail['id'],
                    "createdOn": new_mail['createdOn'],
                    "subject": new_mail['subject'],
@@ -18,6 +27,7 @@ class MailController:
                    "status": new_mail['status'],
                    "sender_id": new_mail['sender_id'],
                    "reciever_id": new_mail['reciever_id']}
+        new = database.create_message()
         mail_list.append(message)
 
         return {"id": new_mail['id'],
@@ -46,7 +56,7 @@ class MailController:
         if recieved_mail:
             return {'status': 200, "data": recieved_mail}
         return {
-            "status": 400,
+            "status": 200,
             "message":
                 "there is no recieved mail to the current reciever_id yet"}
         if not mail_list:
@@ -70,19 +80,19 @@ class MailController:
             return {"status": 200,
                     "message": "There isn't any mail in the inbox"}
 
-    def get_all_mail_sent_by_a_user(self, sender_id):
-        """
-        Function to retrieve all mail whose 
-        sender_id is the same as the logged in user_id
-        """
-        sent = []
-        if not mail_list:
-            return {"status": 200,
-                    "message": "There isn't any mail in the inbox"}
-        for mail in mail_list:
-            if mail['status'] == "sent" and mail['sender_id'] == sender_id:
-                sent.append(mail)
-        return {"sent": sent}
+    # def get_all_mail_sent_by_a_user(self, sender_id):
+    #     """
+    #     Function to retrieve all mail whose 
+    #     sender_id is the same as the logged in user_id
+    #     """
+    #     sent = []
+    #     if not mail_list:
+    #         return {"status": 200,
+    #                 "message": "There isn't any mail in the inbox"}
+    #     for mail in mail_list:
+    #         if mail['status'] == "sent" and mail['sender_id'] == sender_id:
+    #             sent.append(mail)
+    #     return {"sent": sent}
 
     def get_specific_users_email(self, mail_id, reciever_id):
         """Function that retrieves a particular mail"""
