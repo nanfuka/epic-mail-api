@@ -14,10 +14,10 @@ class BaseTestCase(unittest.TestCase):
         self.database.create_tables()
 
     def tearDown(self):
-    #     """
-    #     Drop the database data and remove session
-    #     """
-        # self.database.cursor.execute("DROP TABLE messages")
+        """
+        Drop the database data
+        """
+        self.database.cursor.execute("DROP TABLE epicgroups")
         self.database.cursor.execute("DROP TABLE users")
 
     def get_index_page(self):
@@ -267,4 +267,65 @@ class BaseTestCase(unittest.TestCase):
             '/api/v2/messages/unread', content_type='application/json',
             headers=dict(Authorization='Bearer ' + token)
 
+        )
+
+    def create_a_group(self,
+                       name="abazimbi",
+                       role="developers"):
+        """
+        Method for registering a user with dummy data
+        """
+        token = self.get_token()
+        return self.client.post(
+            'api/v2/groups',
+            data=json.dumps(dict(
+                name=name,
+                role=role
+            )
+            ),
+            content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def create_a_group_with_invalid_authentication(self,
+                                                   name="abazimbi",
+                                                   role="developers"):
+        """
+        Method for registering a user with dummy data
+        """
+        token = "am so invalid"
+        return self.client.post(
+            'api/v2/groups',
+            data=json.dumps(dict(
+                name=name,
+                role=role
+            )
+            ),
+            content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def create_a_group_without_authentication(self,
+                                              name="abazimbi",
+                                              role="developers"):
+        """
+        Method for creating a group without authentication
+        """
+        token = self.get_token()
+        return self.client.post(
+            'api/v2/groups',
+            data=json.dumps(dict(
+                name=name,
+                role=role
+            )
+            ),
+            content_type='application/json')
+
+    def fetch_all_groups(self):
+        """Method for testign fetch_all_groups"""
+        token = self.get_token()
+        self.create_a_group()
+        return self.client.get(
+            '/api/v2/groups', content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
         )
