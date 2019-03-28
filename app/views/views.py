@@ -223,8 +223,10 @@ def get_delete_mail(message_id):
     delete = database.delete_mail(message_id, reciever_id)
     if database.check_if_message_id_exists(message_id):    
         delete
-        return jsonify({"status": 200,
-                    "message": "The email has been deleted successfully"})
+        return jsonify({
+            "status": 200,
+            "data": [{"message":
+                      "The email has been deleted successfully"}]})
     return jsonify({"status": 200, "message": "the message with supplied message_id is not available"})
 
 
