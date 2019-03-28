@@ -11,10 +11,10 @@ class Database:
 
         if os.getenv('DB_NAME') == 'epicmail':
             self.db_name = 'epicmail'
-        self.db_name = 'epik'
+        self.db_name = 'epicmail'
 
         self.db_connect = psycopg2.connect(
-            database=self.db_name, user='postgres', password='test',
+            database=self.db_name, user='postgres', password='',
             host='127.0.0.1', port=5432)
         self.db_connect.autocommit = True
         self.cursor = self.db_connect.cursor(cursor_factory=RealDictCursor)
