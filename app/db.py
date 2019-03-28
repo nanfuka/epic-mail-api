@@ -11,7 +11,7 @@ class Database:
 
         if os.getenv('DB_NAME') == 'epicmail':
             self.db_name = 'epicmail'
-        self.db_name = 'epicmail'
+        self.db_name = 'epik'
 
         self.db_connect = psycopg2.connect(
             database=self.db_name, user='postgres', password='',
