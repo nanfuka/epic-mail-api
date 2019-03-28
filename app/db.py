@@ -14,7 +14,7 @@ class Database:
         self.db_name = 'epik'
 
         self.db_connect = psycopg2.connect(
-            database=self.db_name, user='postgres', password='',
+            database=self.db_name, user='postgres', password='test',
             host='127.0.0.1', port=5432)
         self.db_connect.autocommit = True
         self.cursor = self.db_connect.cursor(cursor_factory=RealDictCursor)
@@ -133,6 +133,4 @@ class Database:
             created_on DATE, sender_id integer);"""
         self.cursor.execute(table_inbox)
 
-    def drop_table(self, table_name):
-        drop_table = "DROP TABLE IF EXISTS {}".format(table_name)
-        self.cursor.execute(drop_table)
+
