@@ -24,15 +24,15 @@ class Database:
             print(e, "Database Connection failed")
 
     def create_tables(self):
-        table_users = """CREATE TABLE IF NOT EXISTS users(ID SERIAL PRIMARY KEY NOT NULL,
+        users = """CREATE TABLE IF NOT EXISTS users(ID SERIAL PRIMARY KEY NOT NULL,
         firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""
-        self.cursor.execute(table_users)
+        self.cursor.execute(users)
 
         table_contacts = """CREATE TABLE IF NOT EXISTS contacts(ID SERIAL PRIMARY KEY NOT NULL, firstname VARCHAR(20) NOT NULL,lastname VARCHAR(20) NOT NULL, email VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL);"""
         self.cursor.execute(table_contacts)
 
-        table_messages = """CREATE TABLE IF NOT EXISTS messages(ID SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer, reciever_id  integer);"""
-        self.cursor.execute(table_messages)
+        messages = """CREATE TABLE IF NOT EXISTS messages(ID SERIAL PRIMARY KEY NOT NULL, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer, reciever_id  integer);"""
+        self.cursor.execute(messages)
         table_groupmessages = """CREATE TABLE IF NOT EXISTS groupmessages(id SERIAL PRIMARY KEY NOT NULL, group_id integer, created_on DATE, subject VARCHAR(20) NOT NULL, message VARCHAR(20) NOT NULL, status VARCHAR(20) NOT NULL, sender_id integer);"""
         self.cursor.execute(table_groupmessages)
 
@@ -158,11 +158,9 @@ class Database:
         self.cursor.execute(query)
         # return self.cursor.fetchone()
 
-    def get_unread_mail_from_inbox(self, reciever_id):
+    def get_unread_mail_from_inbox(self, status, reciever_id):
         """get all unread from the inbox"""
-        query = "SELECT * FROM inbox WHERE status = unread AND"
-
-        # query = "SELECT messages.id, subject, status, receiver_id, sender_id FROM messages INNERJOIN inbox on message.id = inbox.message_id WHERE message.status=sent"
+        query = "SELECT * FROM inbox WHERE status ='{}' and reciever_id = {}".format(status, reciever_id)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
@@ -173,7 +171,7 @@ class Database:
         self.cursor.execute(query)
 
     def get_particular_message(self, message_id, reciever_id):
-        query = "SELECT * FROM inbox WHERE message_id = {} AND reciever_id = {}".format(
+        query = "SELECT * FROM inbox WHERE id = {} AND reciever_id = {}".format(
             message_id, reciever_id)
         self.cursor.execute(query)
         return self.cursor.fetchall()
@@ -253,6 +251,14 @@ class Database:
         query = "SELECT * FROM users WHERE id = {}".format(user_id)
         self.cursor.execute(query)
         return self.cursor.fetchone()
+    
+    def check_if_message_id_exists(self, id):
+        """Method to check whether the
+        message id given exists in the inbox
+        """
+        query = "SELECT * FROM inbox WHERE id = '{}'".format(id)
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
         
 
 

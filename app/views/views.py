@@ -156,7 +156,7 @@ def create_message():
                               "status":new_mail['status']}]})
 
 
-@app.route('/api/v1/messages/sent', methods=['GET'])
+@app.route('/api/v2/messages/sent', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/sent.yml', methods=['GET'])
 def get_sent_mail():
@@ -166,18 +166,18 @@ def get_sent_mail():
                     "data": database.get_all_sent_mail_by_a_user(sender_id)})
 
 
-@app.route('/api/v2/modify_status/<int:message_id>', methods=['PATCH'])
-@authentication.user_token
-@swag_from('../apidocs/sent.yml', methods=['GET'])
-def modify_message(message_id):
-    """the current user can modify the status of their message"""
-    reciever_id = get_id_from_header()
-    data = request.get_json()
-    status = data.get('status')
-    modified = database.modify_message_status(status, reciever_id, message_id)
-    return jsonify({"status": 200, "data":
-                    [{"id": message_id,
-                        "message": "successfully modified the status"}]})
+# @app.route('/api/v2/modify_status/<int:message_id>', methods=['PATCH'])
+# @authentication.user_token
+# @swag_from('../apidocs/sent.yml', methods=['GET'])
+# def modify_message(message_id):
+#     """the current user can modify the status of their message"""
+#     reciever_id = get_id_from_header()
+#     data = request.get_json()
+#     status = data.get('status')
+#     modified = database.modify_message_status(status, reciever_id, message_id)
+#     return jsonify({"status": 200, "data":
+#                     [{"id": message_id,
+#                         "message": "successfully modified the status"}]})
 
 
 @app.route('/api/v2/messages', methods=['GET'])
@@ -189,34 +189,58 @@ def get_recieved_mail():
      sent with a recieverid of logged in user
     """
     reciever_id = get_id_from_header()
+    inbox = database.get_induviduals_inbox(reciever_id)
+    if inbox:
+        return jsonify({"status": 200,
+                        "data": inbox})
+    return jsonify({"status": 200, "message": "you have no recieved messages"})
+
+@app.route('/api/v2/messages/unread', methods=['GET'])
+@authentication.user_token
+@swag_from('../apidocs/unread.yml', methods=['GET'])
+def get_unread_mail():
+    """
+    view all messages in the inbox whose status is not read
+    """
+    reciever_id = get_id_from_header()
+    status = "unread"   
+    unread = database.get_unread_mail_from_inbox(status, reciever_id)
+    if unread:
+        return jsonify({"status": 200, "data": unread})
+
     return jsonify({"status": 200,
-                    "data": database.get_induviduals_inbox(reciever_id)})
+                    "message": "you do not have any unread mail in you inbox at the moment"})
 
 
-@app.route('/api/v1/messages/deleted/<int:message_id>', methods=['DELETE'])
+@app.route('/api/v2/messages/deleted/<int:message_id>', methods=['DELETE'])
 @authentication.user_token
 @swag_from('../apidocs/unread.yml', methods=['GET'])
 def get_delete_mail(message_id):
     """
-    view all messages whose status is sent to a particular reciever-id
+    delete a particular email
     """
     reciever_id = get_id_from_header()
     delete = database.delete_mail(message_id, reciever_id)
-
-    return jsonify({"status": 200,
+    if database.check_if_message_id_exists(message_id):    
+        delete
+        return jsonify({"status": 200,
                     "message": "The email has been deleted successfully"})
+    return jsonify({"status": 200, "message": "the message with supplied message_id is not available"})
 
 
-@app.route('/api/v1/messages/<int:message_id>', methods=['GET'])
+@app.route('/api/v2/messages/<int:message_id>', methods=['GET'])
 @authentication.user_token
 @swag_from('../apidocs/unread.yml', methods=['GET'])
 def get_particular_mail(message_id):
     """Route for retrieving a particular mail"""
 
     reciever_id = get_id_from_header()
-    database.get_unread_mail_from_inbox
-    return jsonify(database.get_get_particular_message(
-        message_id, reciever_id))
+    mail = database.get_particular_message(message_id, reciever_id)
+    if database.check_if_message_id_exists(message_id):    
+        if mail:
+            return jsonify({"status": 200, "data": [mail]})
+        return jsonify({"status": 200, "message": "the message with supplied message_id is not available"})
+    return jsonify({"status": 400, "error": "that message_id is not in the system"})
 
 
 @app.route('/api/v2/groups', methods=['POST'])
@@ -248,7 +272,7 @@ def fetch_groups():
     all_groups = database.fetch_all_groups(admin)
     if all_groups:
         return jsonify({"status": 200, "data": all_groups})
-    return jsonify({"message": "You have not yet created any groups"})
+    return jsonify({"status":200, "message": "You have not yet created any groups"})
 
 
 @app.route('/api/v2/groupss/<int:group_id>', methods=['DELETE'])
@@ -362,5 +386,5 @@ def create_group_message(group_id):
                 group_id=group_id
             )
             return jsonify({"status": 201, "data": [{"id": new_mail['id'], "createdOn":new_mail['created_on'], "subject":new_mail['subject'], "message":new_mail['message'], "parentMessageId":new_mail['id'], "status":new_mail['status']}]})
-        return jsonify({"status": 404, "error": "you can only modify a group which you created"})
+        return jsonify({"status": 404, "error": "you can only send messages to  a group which you created"})
     return jsonify({"status": 404, "error": "the group is non existant"})

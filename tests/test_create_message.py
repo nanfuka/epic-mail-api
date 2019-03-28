@@ -21,7 +21,7 @@
 #             self.assertEqual(data['status'], 201)
 #             self.assertEqual(data['data'][0]['subject'], "bookstore")
 #             self.assertEqual(data['data'][0]['message'], 'can you shift it')
-#             self.assertEqual(data['data'][0]['parentMessageId'], 1)
+#             # self.assertEqual(data['data'][0]['parent_message_id'], 19)
 #             self.assertEqual(data['data'][0]['status'], 'draft')
 
 #     def test_post_a_message_with_very_short_subject(self):
