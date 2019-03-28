@@ -197,10 +197,15 @@ class Validators:
             return "name is too short"
         if len(role) < 2:
             return "role value is too short"
-    
+
     def validate_group_id(self, group_id):
         if not db.check_if_group_id_exists(group_id):
-            return jsonify({"status": 404, "error": "the id you want to delete is not in the system"})
+            return jsonify(
+                {
+                    "status":
+                    404,
+                    "error":
+                    "the id you want to delete is not in the system"})
 
     def validate_modify(self, name):
         if isinstance(name, int):
@@ -213,18 +218,20 @@ class Validators:
             return "Name of group already taken, choose anotherone"
         if len(name) < 2:
             return "name is too short"
+
     def validate_add_user_to_group(self, user_id, userrole):
         if not user_id:
             return "Enter user_id"
         if not isinstance(user_id, int):
             return "The user_id should be a number"
         if not db.check_user_available(user_id):
-            return "The user with that user_id is not registered with the application"
+            return
+            "The user with that user_id is not registered with the application"
         if not userrole:
             return "Enter userrole"
         if not isinstance(userrole, str):
             return "User role should be a string"
-        if len(userrole)<2:
+        if len(userrole) < 2:
             return "Enter a clear to understand userrole"
 
     def validate_group_mails(self, subject, message, status):
@@ -237,7 +244,6 @@ class Validators:
         if len(subject) < 10:
             return "subject is too short"
 
-
         if isinstance(message, int):
             return "message should be made up of letters"
         if not message or message.strip() == "":
@@ -245,6 +251,5 @@ class Validators:
         if len(message) < 2:
             return "subject is too short"
 
-        if status != "draft" or status =="sent":
+        if status != "draft" or status == "sent":
             return "status should of mail should either be sent or in draft"
-            

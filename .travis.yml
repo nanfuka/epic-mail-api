@@ -1,18 +1,44 @@
-language: python
+# language: python
+# python:
+#   - "3.6.2"
+
+# #Install dependecies
+# install:
+#   - pip install -r requirements.txt
+
+
+# #Run tests
+# script:
+#   - pytest --cov
+
+# after_success:
+#   - coveralls
+
+# notifications:
+#   email: false
+
+
+
+``` language: python
 python:
-  - "3.6.2"
-
-#Install dependecies
+ - "3.6.6"
+services:
+ - postgresql
+env:
+ global:
+   - DB_NAME='epicmail'
+# command to install dependencies
 install:
-  - pip install -r requirements.txt
-
-
-#Run tests
+ - pip install -r requirements.txt
+before_script:
+ - "psql -c 'create database epicmail;' -U postgres"
+# command to run tests
 script:
-  - pytest --cov
+ - nosetests --with-coverage --cover-tests
+ - coverage report
 
 after_success:
-  - coveralls
-
+ - coveralls
+# dont bombard me with emails...lol
 notifications:
-  email: false
+ email: false

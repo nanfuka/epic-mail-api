@@ -11,15 +11,11 @@ class Test_messages(BaseTestCase):
             response = self.get_all_unread_messages()
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)  
-            self.assertEqual(data['message'], 'you do not have any unread mail in you inbox at the moment')  
-            # self.assertEqual(data['data'][0]['subject'], "graduation ceremony")  
-            # self.assertEqual(data['data'][0]['message'],
-            #                  'invitation to attend my graduation') 
-            # self.assertEqual(data['data'][0]['parentMessageId'], 2)  
-            # self.assertEqual(data['data'][0]['status'], 'sent')
-            # self.assertEqual(data['data'][0]['sender_id'], 1)
-            # self.assertEqual(data['data'][0]['reciever_id'], 1)
+            self.assertEqual(data['status'], 200)
+            self.assertEqual(
+                data[
+                    'message'],
+                'you do not have any unread mail in you inbox')
 
     def test_get_recieved_unreadmessages_without_token(self):
         """
@@ -40,4 +36,3 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(data['status'], 200)
-

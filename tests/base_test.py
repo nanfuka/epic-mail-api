@@ -329,3 +329,35 @@ class BaseTestCase(unittest.TestCase):
             '/api/v2/groups', content_type='application/json',
             headers=dict(Authorization='Bearer ' + token)
         )
+
+    def delete_a_group(self):
+        """Delete a particular message given an invalid message id"""
+        token = self.get_token()
+        self.create_a_group()
+        return self.client.delete(
+            '/api/v2/groupss/1',  content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def change_group_name(self, name="mothers"):
+        """change group name"""
+        token = self.get_token()
+        self.create_a_group()
+        return self.client.patch(
+            '/api/v2/groups/1/name',
+            data=json.dumps(dict(name=name)
+                            ),
+            content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def add_members_togroup(self, userid=1, userrole="treasurer"):
+        """admin can add members to a group"""
+        token = self.get_token()
+        self.create_a_group()
+        return self.client.post(
+            '/api/v2/groups/14/users',
+            data=json.dumps(dict(userid=userid, userrole=userrole)
+                            ), content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )

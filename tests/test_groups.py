@@ -1,6 +1,4 @@
 from tests.base_test import BaseTestCase
-# from app.models.user import User
-
 import json
 
 
@@ -61,7 +59,10 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(data['status'], 404)
-            self.assertEqual(data['error'], 'name should be made up of letters')
+            self.assertEqual(
+                data[
+                    'error'],
+                'name should be made up of letters')
 
     def test_create_a_group_with_wrong_role_type(self):
         """
@@ -75,12 +76,15 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(data['status'], 404)
-            self.assertEqual(data['error'], 'role should be made up of letters')
+            self.assertEqual(
+                data[
+                    'error'],
+                'role should be made up of letters')
 
     def test_create_group_with_invalid_authentication(self):
         response = self.create_a_group_with_invalid_authentication("abazimbi",
                                                                    "developers"
-                                        
+
                                                                    )
         self.assertEqual(response.status_code, 401)
         data = json.loads(response.data)
@@ -89,11 +93,8 @@ class Test_messages(BaseTestCase):
     def test_create_group_without_authentication(self):
         response = self.create_a_group_without_authentication("abazimbi",
                                                               "developers"
-                                        
+
                                                               )
         self.assertEqual(response.status_code, 401)
         data = json.loads(response.data)
         self.assertEqual(data['message'], 'Token does not exist')
-
-
-    # def test_fetch_all_groups(self):
