@@ -79,7 +79,7 @@ class Test_registration(BaseTestCase):
 
             data = json.loads(response.data)
             self.assertEqual(data['error'], 'Enter your password')
-            self.assertEqual(data['status'], 404)
+            self.assertEqual(data['status'], 400)
 
     def test_login_without_email_value(self):
         """
@@ -95,4 +95,4 @@ class Test_registration(BaseTestCase):
 
             data = json.loads(response.data)
             self.assertEqual(data['error'], 'Enter your email')
-            self.assertEqual(data['status'], 404)
+            self.assertEqual(data['status'], 400)

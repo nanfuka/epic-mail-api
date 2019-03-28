@@ -12,7 +12,7 @@ class Test_messages(BaseTestCase):
             response = self.get_all_recieved_mail()
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)
+            self.assertEqual(data['status'], 404)
  
             # self.assertEqual(data['data'][0]['subject'], 'bnbjhb')
             # self.assertEqual(
@@ -48,6 +48,6 @@ class Test_messages(BaseTestCase):
             response = self.get_all_recieved_mail_with_empty_inbox()
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)
+            self.assertEqual(data['status'], 404)
 
 

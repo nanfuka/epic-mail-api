@@ -4,6 +4,8 @@ import unittest
 import json
 
 database = Database()
+
+
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
         self.app = app
@@ -20,20 +22,6 @@ class BaseTestCase(unittest.TestCase):
         database.drop_table('users')
 
         database.create_tables()
-    # def setUp(self):
-    #     """
-    #     initialise the test runner
-    #     """
-    #     self.client = app.test_client(self)
-    #     self.database = Database()
-    #     self.database.create_tables()
-
-    # def tearDown(self):
-    #     """
-    #     Drop the database data
-    #     """
-    #     self.database.cursor.execute("DROP TABLE epicgroups")
-    #     self.database.cursor.execute("DROP TABLE users")
 
     def get_index_page(self):
         """
@@ -104,6 +92,173 @@ class BaseTestCase(unittest.TestCase):
             'api/v2/message',
             data=json.dumps(dict(
                             subject=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+
+                            )
+                            ), content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def post_a_message_with_invalid_subject_keys(self,
+
+                                                 subject="graduation ceremony",
+                                                 message="invitation to attend my graduation",
+                                                 parentMessageId=1,
+                                                 status="sent",
+                                                 sender_id=1,
+                                                 reciever_id=1
+                                                 ):
+        token = self.get_token()
+        """
+        Method for posting a message with dummy data
+        """
+        return self.client.post(
+            'api/v2/message',
+            data=json.dumps(dict(
+                            subjec=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+
+                            )
+                            ), content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def post_a_message_with_message_keys(self,
+
+                                         subject="graduation ceremony",
+                                         messa="invitation to attend my graduation",
+                                         parentMessageId=1,
+                                         status="sent",
+                                         sender_id=1,
+                                         reciever_id=1
+                                        ):
+        token = self.get_token()
+        """
+        Method for posting a message with dummy data
+        """
+        return self.client.post(
+            'api/v2/message',
+            data=json.dumps(dict(
+                            subject=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+
+                            )
+                            ), content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def post_a_message_with_status_keys(self,
+
+                                        subject="graduation ceremony",
+                                        message="invitation to attend my graduation",
+                                        parentMessageId=1,
+                                        status="sent",
+                                        sender_id=1,
+                                        reciever_id=1
+                                        ):
+        token = self.get_token()
+        """
+        Method for posting a message with dummy data
+        """
+        return self.client.post(
+            'api/v2/message',
+            data=json.dumps(dict(
+                            subjec=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            sta=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+
+                            )
+                            ), content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def post_a_message_with_invalid_sender_id_key_keys(self,
+
+                                                        subject="graduation ceremony",
+                                                        message="invitation to attend my graduation",
+                                                        parentMessageId=1,
+                                                        status="sent",
+                                                        sender_=1,
+                                                        reciever_id=1
+                                                        ):
+        token = self.get_token()
+        """
+        Method for posting a message with dummy data
+        """
+        return self.client.post(
+            'api/v2/message',
+            data=json.dumps(dict(
+                            subjec=subject,
+                            message=message,
+                            parentMessageId=parentMessageId,
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+
+                            )
+                            ), content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
+    def post_a_message_with_invalid_keys(self,
+
+                       subject="graduation ceremony",
+                       message="invitation to attend my graduation",
+                       parentMessageId=1,
+                       status="sent",
+                       sender_id=1,
+                       reciever_id=1
+                       ):
+        token = self.get_token()
+        """
+        Method for posting a message with dummy data
+        """
+        return self.client.post(
+            'api/v2/message',
+            data=json.dumps(dict(
+                            subject=subject,
+                            message=message,
+
+                            status=status,
+                            sender_id=sender_id,
+                            reciever_id=reciever_id
+
+                            )
+                            ), content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+    
+    def post_a_message_with_invalid_subject_keys(self,
+
+                                                 subjec="graduation ceremony",
+                                                 message="invitation to attend my graduation",
+                                                 status="sent",
+                                                 sender_id=1,
+                                                 reciever_id=1
+                                                 ):
+        token = self.get_token()
+        """
+        Method for posting a message with dummy data
+        """
+        return self.client.post(
+            'api/v2/message',
+            data=json.dumps(dict(
+                            subjec=subject,
                             message=message,
                             parentMessageId=parentMessageId,
                             status=status,
@@ -371,7 +526,7 @@ class BaseTestCase(unittest.TestCase):
         token = self.get_token()
         self.create_a_group()
         return self.client.post(
-            '/api/v2/groups/14/users',
+            '/api/v2/groups/1/users',
             data=json.dumps(dict(userid=userid, userrole=userrole)
                             ), content_type='application/json',
             headers=dict(Authorization='Bearer ' + token)

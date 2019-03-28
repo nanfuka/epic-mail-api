@@ -7,6 +7,7 @@ import datetime
 authentication = Authentication()
 database = Database()
 
+
 class UserControllers:
     def login(self, email, password):
         """method for logging in the registered user"""

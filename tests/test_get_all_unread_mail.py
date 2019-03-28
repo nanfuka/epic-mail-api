@@ -11,7 +11,7 @@ class Test_messages(BaseTestCase):
             response = self.get_all_unread_messages()
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)
+            self.assertEqual(data['status'], 404)
             self.assertEqual(
                 data[
                     'message'],
@@ -35,4 +35,4 @@ class Test_messages(BaseTestCase):
             response = self.get_all_unread_messages_given_empty_mail_list()
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)
+            self.assertEqual(data['status'], 404)

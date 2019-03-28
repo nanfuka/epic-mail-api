@@ -15,7 +15,6 @@ app = Flask(__name__)
 swagger = Swagger(app)
 validators = Validators()
 user_controller = UserControllers()
-# mail_controller = MailController()
 database = Database()
 
 authentication = Authentication()
@@ -84,7 +83,7 @@ def login():
     password = data['password']
     invalid_login_values = validators.validate_login_values(email, password)
     if invalid_login_values:
-        return jsonify({"status": 404, "error": invalid_login_values})
+        return jsonify({"status": 400, "error": invalid_login_values})
     login = user_controller.login(email, password)
     if login:
         return jsonify(login)
@@ -179,7 +178,7 @@ def get_recieved_mail():
     if inbox:
         return jsonify({"status": 200,
                         "data": inbox})
-    return jsonify({"status": 200, "message": "you have no recieved messages"})
+    return jsonify({"status": 404, "message": "you have no recieved messages"})
 
 
 @app.route('/api/v2/messages/unread', methods=['GET'])
@@ -196,7 +195,7 @@ def get_unread_mail():
         return jsonify({"status": 200, "data": unread})
 
     return jsonify({
-        "status": 200,
+        "status": 404,
         "message": "you do not have any unread mail in your inbox"
     })
 
@@ -233,7 +232,7 @@ def get_particular_mail(message_id):
         if mail:
             return jsonify({"status": 200, "data": [mail]})
         return jsonify({
-            "status": 400,
+            "status": 404,
             "message": "the message with the given message_id is not available"
         })
     return jsonify({
@@ -270,7 +269,7 @@ def fetch_groups():
     all_groups = database.fetch_all_groups(admin)
     if all_groups:
         return jsonify({"status": 200, "data": all_groups})
-    return jsonify({"status": 200,
+    return jsonify({"status": 404,
                     "message": "You have not yet created any groups"})
 
 
@@ -312,7 +311,7 @@ def change_group_name(group_id):
             if change:
                 return jsonify({"status": 200, "data": change})
         return jsonify({
-            "status": 40,
+            "status": 400,
             "error": "you can only modify a group which you created"})
     return jsonify({"status": 404,
                     "error": "the group is not available"})
@@ -366,10 +365,10 @@ def delete_user_from_particular_group(group_id, user_id):
             delete_user_from_group = database.delete_user_from_specific_group(
                 user_id, group_id)
             return jsonify({
-                "status": 201,
+                "status": 200,
                 "data": "The user has been deleted from the group"})
         return jsonify({
-            "status": 404,
+            "status": 403,
             "error": "You are not authorised to modify this group"})
     return jsonify({"status": 404, "error": "the group is non existant"})
 
@@ -417,7 +416,7 @@ def create_group_message(group_id):
                                       "parentMessageId":new_mail['id'],
                                       "status":new_mail['status']}]})
         return jsonify({
-            "status": 404,
+            "status": 403,
             "error": "you are not authosrised to modify this group"
         })
     return jsonify({"status": 404, "error": "the group is non existant"})

@@ -148,4 +148,25 @@ class Test_messages(BaseTestCase):
             self.assertEqual(
                 data['message'],
                 'the message with supplied message_id is not available')
+        
+    # def test_create_mail_with_invalid_subject(self):
+    #     with self.client:
+    #         response = self.post_a_message_with_invalid_subject_keys()
+    #         self.assertEqual(response.status_code, 200)
+    #         data = json.loads(response.data)
+    #         self.assertEqual(data['status'], 400)
+    #         self.assertEqual(data['error'], 'subject field must be present')
+
+    # def test_create_mail_with_invalid_key(self):
+    #     with self.client:
+    #         response = self.post_a_message_with_invalid_message_keys()
+    #         self.assertEqual(response.status_code, 200)
+    #         data = json.loads(response.data)
+    #         self.assertEqual(data['status'], 400)
+    #         self.assertEqual(data['error'], 'message field must be present')
+    #         # self.assertEqual(
+            #     data['message'],
+            #     'the message with supplied message_id is not available')
+
+    
 

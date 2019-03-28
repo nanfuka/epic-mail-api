@@ -88,16 +88,16 @@ class Validators:
 
         lst = args[5]
         if subject not in lst:
-            return {'message': 'subject field must be present'}
+            return {'subject field must be present'}
 
         if message not in lst:
             return {'message': 'message field must be present'}
 
         if status not in lst:
-            return {'message': 'status field must be present'}
+            return {'status field must be present'}
 
         if reciever_id not in lst:
-            return {'message': 'reciever_id field must be present'}
+            return {'reciever_id field must be present'}
 
     def validate_login_keys(self, email, password, data):
         if email not in data:

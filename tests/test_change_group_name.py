@@ -5,7 +5,7 @@ import json
 class Test_messages(BaseTestCase):
     def test_change_group(self):
         """
-        Test delete a particular group
+        Test to change a group name
         """
         with self.client:
             response = self.change_group_name("treasures")
