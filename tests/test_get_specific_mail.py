@@ -24,4 +24,4 @@ class Test_messages(BaseTestCase):
             response = self.retrieve_a_message_given_non_existent_message_id()
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)
+            self.assertEqual(data['status'], 400)

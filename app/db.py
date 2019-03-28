@@ -8,20 +8,30 @@ from flask import Flask, jsonify, request, json
 
 class Database:
     def __init__(self):
-        try:
-            if not environ.get('DATABASE_URL'):
-                self.connection = psycopg2.connect(
-                    "postgres://postgres:test@localhost:5432/epicmail")
-            else:
-                self.connection = psycopg2.connect(environ.get('DATABASE_URL'))
-            self.connection.autocommit = True
-            self.cursor = self.connection.cursor(
-                cursor_factory=RealDictCursor
-            )
-            self.create_tables()
+        
+        if os.getenv('DB_NAME') == 'epicmail':
+            self.db_name = 'epicmail'
+        self.db_name = 'epik'
 
-        except psycopg2.OperationalError as e:
-            print(e, "Database Connection failed")
+        self.db_connect = psycopg2.connect(
+            database=self.db_name, user='postgres', password='', host='localhost', port=5432)
+        self.db_connect.autocommit = True
+        self.cursor = self.db_connect.cursor(cursor_factory = RealDictCursor)
+        self.create_tables()
+        
+        #     if not environ.get('DATABASE_URL'):
+        #         self.connection = psycopg2.connect(
+        #             "postgres://postgres:test@localhost:5432/epicmail")
+        #     else:
+        #         self.connection = psycopg2.connect(environ.get('DATABASE_URL'))
+        #     self.connection.autocommit = True
+        #     self.cursor = self.connection.cursor(
+        #         cursor_factory=RealDictCursor
+        #     )
+        #     self.create_tables()
+
+        # except psycopg2.OperationalError as e:
+        #     print(e, "Database Connection failed")
 
     def create_tables(self):
         """Function which creates all the tables with in the database"""
@@ -353,13 +363,13 @@ class Database:
             '{role}') RETURNING id, name, role;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
-   
+
     def fetch_all_groups(self, admin):
         query = "SELECT id, name, role FROM epicgroups \
             WHERE admin = '{}'".format(admin)
         self.cursor.execute(query)
         return self.cursor.fetchall()
-   
+
     def patch_group_name(self, group_id, group_name):
         query = "UPDATE epicgroups SET name = '{}' WHERE id = '{}'\
          RETURNING * ;".format(
@@ -374,7 +384,6 @@ class Database:
         self.cursor.execute(query)
 
     def create_group(self, group_id, userid, userrole):
-        
         """Function to add members to a group"""
         insert = f"""INSERT INTO clusters(group_id, userid, userrole)\
              VALUES ('{group_id}', '{userid}',
@@ -418,7 +427,7 @@ class Database:
         query = "SELECT * FROM users WHERE id = {}".format(user_id)
         self.cursor.execute(query)
         return self.cursor.fetchone()
-    
+
     def check_if_message_id_exists(self, id):
         """Method to check whether the
         message id given exists in the inbox
@@ -426,4 +435,7 @@ class Database:
         query = "SELECT * FROM inbox WHERE id = '{}'".format(id)
         self.cursor.execute(query)
         return self.cursor.fetchall()
-        
+    
+    def drop_table(self, table_name):
+        drop_table = "DROP TABLE IF EXISTS {}".format(table_name)
+        self.cursor.execute(drop_table)
