@@ -1,11 +1,10 @@
 from flask import Flask, jsonify, request, json
 from app.controllers.user_controllers import UserControllers
-# from app.controllers.mail_controllers import MailController
+from app.controllers.mail_controllers import Mail
 from functools import wraps
 import jwt
 import datetime
 from flasgger import Swagger, swag_from
-from app.db import Database
 from app.validators import Validators
 from app.auth import Authentication
 import datetime
@@ -15,9 +14,10 @@ app = Flask(__name__)
 swagger = Swagger(app)
 validators = Validators()
 user_controller = UserControllers()
-database = Database()
-
+mail = Mail()
 authentication = Authentication()
+
+app = Flask(__name__)
 
 
 @app.route('/')
@@ -54,7 +54,7 @@ def signup():
         return jsonify({"status": 400, "error": error_email})
     if error_password:
         return jsonify({"status": 400, "error": error_password})
-    register = database.signup(firstname=firstname,
+    register = mail.signup(firstname=firstname,
                                lastname=lastname,
                                email=email,
                                password=password)
@@ -129,7 +129,7 @@ def create_message():
     valid_id = validators.validate_id(reciever_id)
     if valid_id:
         return jsonify({"status": 400, "error": valid_id})
-    new_mail = database.create_message(
+    new_mail = mail.create_message(
         created_on=created_on,
 
         subject=subject,
@@ -139,7 +139,7 @@ def create_message():
         reciever_id=reciever_id
     )
     if status == "sent":
-        inbox = database.create_inbox(created_on=created_on,
+        inbox = mail.create_inbox(created_on=created_on,
                                       subject=subject,
                                       message=message,
                                       sender_id=sender_id,
@@ -162,7 +162,7 @@ def get_sent_mail():
     """Route which fetches all mail sent by the current user"""
     sender_id = get_id_from_header()
     return jsonify({"status": 200,
-                    "data": database.get_all_sent_mail_by_a_user(sender_id)})
+                    "data": mail.get_all_sent_mail_by_a_user(sender_id)})
 
 
 @app.route('/api/v2/messages', methods=['GET'])
@@ -174,7 +174,7 @@ def get_recieved_mail():
      sent with a recieverid of logged in user
     """
     reciever_id = get_id_from_header()
-    inbox = database.get_induviduals_inbox(reciever_id)
+    inbox = mail.get_induviduals_inbox(reciever_id)
     if inbox:
         return jsonify({"status": 200,
                         "data": inbox})
@@ -190,7 +190,7 @@ def get_unread_mail():
     """
     reciever_id = get_id_from_header()
     status = "unread"
-    unread = database.get_unread_mail_from_inbox(status, reciever_id)
+    unread = mail.get_unread_mail_from_inbox(status, reciever_id)
     if unread:
         return jsonify({"status": 200, "data": unread})
 
@@ -208,8 +208,8 @@ def get_delete_mail(message_id):
     delete a particular email
     """
     reciever_id = get_id_from_header()
-    delete = database.delete_mail(message_id, reciever_id)
-    if database.check_if_message_id_exists(message_id):
+    delete = mail.delete_mail(message_id, reciever_id)
+    if mail.check_if_message_id_exists(message_id):
         delete
         return jsonify({
             "status": 200,
@@ -227,8 +227,8 @@ def get_particular_mail(message_id):
     """Route for retrieving a particular mail"""
 
     reciever_id = get_id_from_header()
-    mail = database.get_particular_message(message_id, reciever_id)
-    if database.check_if_message_id_exists(message_id):
+    mail = mail.get_particular_message(message_id, reciever_id)
+    if mail.check_if_message_id_exists(message_id):
         if mail:
             return jsonify({"status": 200, "data": [mail]})
         return jsonify({
@@ -254,7 +254,7 @@ def create_group():
     invalid = validators.validate_group_creation(name=name, role=role)
     if invalid:
         return jsonify({"status": 400, "error": invalid})
-    new_group = database.create_groups(admin, name, role)
+    new_group = mail.create_groups(admin, name, role)
 
     return jsonify({"status": 201, "data": [new_group]})
 
@@ -266,7 +266,7 @@ def fetch_groups():
     groups that they have created 
     """
     admin = get_id_from_header()
-    all_groups = database.fetch_all_groups(admin)
+    all_groups = mail.fetch_all_groups(admin)
     if all_groups:
         return jsonify({"status": 200, "data": all_groups})
     return jsonify({"status": 404,
@@ -281,9 +281,9 @@ def delete_groups(group_id):
     the group with a particular group_id
     """
     admin = get_id_from_header()
-    valid_group_id = database.check_if_group_id_exists(group_id)
+    valid_group_id = mail.check_if_group_id_exists(group_id)
     if valid_group_id:
-        delete = database.delete_particular_groups(group_id, admin)
+        delete = mail.delete_particular_groups(group_id, admin)
         return jsonify({
             "status": 200,
             "data": [{"message": "The group has been deleted"}]})
@@ -298,16 +298,16 @@ def change_group_name(group_id):
     """Admin can change the name of the group"""
     admin = get_id_from_header()
 
-    valid_group_id = database.check_if_group_id_exists(group_id)
+    valid_group_id = mail.check_if_group_id_exists(group_id)
     if valid_group_id:
-        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+        if mail.get_admin_of_a_group(group_id) == get_admin_json(admin):
 
             data = request.get_json()
             name = data.get('name')
             invalid_name = validators.validate_modify(name)
             if invalid_name:
                 return jsonify({"status": 400, "message": invalid_name})
-            change = database.patch_group_name(group_id, name)
+            change = mail.patch_group_name(group_id, name)
             if change:
                 return jsonify({"status": 200, "data": change})
         return jsonify({
@@ -328,9 +328,9 @@ def adduser_to_group(group_id):
     """An admin can add members to a group which they created"""
     admin = get_id_from_header()
 
-    valid_group_id = database.check_if_group_id_exists(group_id)
+    valid_group_id = mail.check_if_group_id_exists(group_id)
     if valid_group_id:
-        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+        if mail.get_admin_of_a_group(group_id) == get_admin_json(admin):
 
             data = request.get_json()
             group_id = group_id
@@ -342,8 +342,8 @@ def adduser_to_group(group_id):
             if invalid_inputs:
                 return jsonify({"status": 400, "error": invalid_inputs})
 
-            add_user = database.create_group(group_id, userid, userrole)
-            all_members_of_this_group = database.get_all_group_members(
+            add_user = mail.create_group(group_id, userid, userrole)
+            all_members_of_this_group = mail.get_all_group_members(
                 group_id)
             return jsonify({"status": 201, "data": all_members_of_this_group})
         return jsonify({
@@ -358,11 +358,11 @@ def adduser_to_group(group_id):
 def delete_user_from_particular_group(group_id, user_id):
     """Route to delete a particular user from the group"""
     admin = get_id_from_header()
-    valid_group_id = database.check_if_group_id_exists(group_id)
+    valid_group_id = mail.check_if_group_id_exists(group_id)
     if valid_group_id:
-        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+        if mail.get_admin_of_a_group(group_id) == get_admin_json(admin):
 
-            delete_user_from_group = database.delete_user_from_specific_group(
+            delete_user_from_group = mail.delete_user_from_specific_group(
                 user_id, group_id)
             return jsonify({
                 "status": 200,
@@ -381,9 +381,9 @@ def create_group_message(group_id):
       and send it to the group using this route
     """
     admin = get_id_from_header()
-    valid_group_id = database.check_if_group_id_exists(group_id)
+    valid_group_id = mail.check_if_group_id_exists(group_id)
     if valid_group_id:
-        if database.get_admin_of_a_group(group_id) == get_admin_json(admin):
+        if mail.get_admin_of_a_group(group_id) == get_admin_json(admin):
             admin = get_id_from_header()
             data = request.get_json()
             created_on = datetime.datetime.now()
@@ -398,7 +398,7 @@ def create_group_message(group_id):
             if invalid_data:
                 return jsonify({"status": 400, "message": invalid_data})
 
-            new_mail = database.create_groupmessage(
+            new_mail = mail.create_groupmessage(
                 created_on=created_on,
 
                 subject=subject,

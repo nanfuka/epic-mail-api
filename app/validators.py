@@ -1,6 +1,6 @@
 import re
-from app.db import Database
-db = Database()
+from app.controllers.mail_controllers import Mail
+mail = Mail()
 
 
 class Validators:
@@ -37,7 +37,7 @@ class Validators:
             return "please enter the email"
         if not email_validation.match(email):
             return 'Invalid email, it should be in this format; kals@gma.com'
-        if db.check_email(email):
+        if mail.check_email(email):
             return "the email you have chosen is already in use"
 
     def validate_login_values(self, email, password):
@@ -61,7 +61,7 @@ class Validators:
 
     def validate_id(self, reciever_id):
         """function which validates the ids passed upon posting a message"""
-        user_list = db.get_all_users()
+        user_list = mail.get_all_users()
         if not isinstance(reciever_id, int):
             return "reciever_id should be a number"
 
@@ -145,7 +145,7 @@ class Validators:
     #         return {"status": 200,
     #                 "message": "There isn't any mail in the inbox"}
     def validate_parent_message_id(self, parent_message_id, message_id):
-        mail_list = db.get_all_mails()
+        mail_list = mail.get_all_mails()
         if parent_message_id != massage_id:
             return "invalid parent_message_id"
         # if not mail_list:
@@ -172,7 +172,7 @@ class Validators:
             return"Enter name"
         if not name.isalpha():
             return "name should be made up of letters"
-        if db.get_all_groupnames(name):
+        if mail.get_all_groupnames(name):
             return "Name of group already taken, choose anotherone"
 
         if isinstance(role, int):
@@ -187,7 +187,7 @@ class Validators:
             return "role value is too short"
 
     def validate_group_id(self, group_id):
-        if not db.check_if_group_id_exists(group_id):
+        if not mail.check_if_group_id_exists(group_id):
             return jsonify(
                 {
                     "status":
@@ -202,7 +202,7 @@ class Validators:
             return"Enter name"
         if not name.isalpha():
             return "name should be made up of letters"
-        if db.get_all_groupnames(name):
+        if mail.get_all_groupnames(name):
             return "Name of group already taken, choose anotherone"
         if len(name) < 2:
             return "name is too short"
@@ -212,7 +212,7 @@ class Validators:
             return "Enter user_id"
         if not isinstance(user_id, int):
             return "The user_id should be a number"
-        if not db.check_user_available(user_id):
+        if not mail.check_user_available(user_id):
             return
             "The user with that user_id is not registered with the application"
         if not userrole:
