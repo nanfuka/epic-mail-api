@@ -140,12 +140,12 @@ def create_message():
     )
     if status == "sent":
         inbox = mail.create_inbox(created_on=created_on,
-                                      subject=subject,
-                                      message=message,
-                                      sender_id=sender_id,
-                                      reciever_id=reciever_id,
-                                      parent_message_id=new_mail['id'],
-                                      status=status)
+                                  subject=subject,
+                                  message=message,
+                                  sender_id=sender_id,
+                                  reciever_id=reciever_id,
+                                  parent_message_id=new_mail['id'],
+                                  status=status)
     return jsonify({"status": 201,
                     "data": [{"id": new_mail['id'],
                               "created_on":new_mail['created_on'],
@@ -178,7 +178,7 @@ def get_recieved_mail():
     if inbox:
         return jsonify({"status": 200,
                         "data": inbox})
-    return jsonify({"status": 404, "message": "you have no recieved messages"})
+    return jsonify({"status": 404, "error": "you have no recieved messages"})
 
 
 @app.route('/api/v2/messages/unread', methods=['GET'])

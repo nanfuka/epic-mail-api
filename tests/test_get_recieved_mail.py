@@ -13,16 +13,9 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(data['status'], 404)
+            self.assertEqual(data['error'], 'you have no recieved messages')
+            
  
-            # self.assertEqual(data['data'][0]['subject'], 'bnbjhb')
-            # self.assertEqual(
-            #     data['data'][0]['message'],
-            #     '1')
-         
-            # self.assertEqual(data['data'][0]['status'], 'sent')
-            # self.assertEqual(data['data'][0]['sender_id'], 1)
-            # self.assertEqual(data['data'][0]['reciever_id'], 1)
-
     def test_get_recieved_messages_without_token(self):
         """
         Test a user is successfully created through the api

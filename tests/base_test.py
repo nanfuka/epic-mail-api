@@ -8,7 +8,6 @@ database = Database()
 mail = Mail()
 
 
-
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
         self.app = app
@@ -334,7 +333,7 @@ class BaseTestCase(unittest.TestCase):
         reciever_id=1
     ):
         """
-        Method for registering a user with dummy data
+        Method for posting a new message without a token
         """
 
         return self.client.post(
@@ -356,6 +355,7 @@ class BaseTestCase(unittest.TestCase):
         """test get all recieved mail"""
 
         token = self.get_token()
+        
         self.post_a_message()
         return self.client.get(
             'api/v2/messages',
