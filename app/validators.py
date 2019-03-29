@@ -239,5 +239,5 @@ class Validators:
         if len(message) < 2:
             return "subject is too short"
 
-        if status != "draft" or status == "sent":
-            return "status should of mail should either be sent or in draft"
+        if status != "draft" and status != "sent":
+            return "The mail status should either be sent or in draft"

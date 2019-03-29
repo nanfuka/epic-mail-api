@@ -12,6 +12,11 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(data['status'], 200)
-            # self.assertEqual(
-            #     data['message'],
-            #     'the message with supplied message_id is not available')
+   
+    def delete_user_from_a_particular_group():
+
+        with self.client:
+            response = self.delete_a_group()
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertEqual(data['status'], 200)

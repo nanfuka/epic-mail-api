@@ -98,3 +98,9 @@ class Test_messages(BaseTestCase):
         self.assertEqual(response.status_code, 401)
         data = json.loads(response.data)
         self.assertEqual(data['message'], 'Token does not exist')
+
+    def test_create_group_message(self):
+        response = self.groupmessage("senticcvbcvxt", "onmatters", "sent")
+        data = json.loads(response.data)
+        self.assertEqual(data['status'], 201)
+     

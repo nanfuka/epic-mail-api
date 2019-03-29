@@ -13,6 +13,16 @@ class Test_messages(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
             self.assertEqual(data['status'], 200)
+
+    def test_groups_you_dint_create(self):
+        """
+        Test get recieved mail
+        """
+        with self.client:
+            response = self.fetch_unauth_groups()
+            self.assertEqual(response.status_code, 200)
+            data = json.loads(response.data)
+            self.assertEqual(data['status'], 404)
  
             # self.assertEqual(data['data'][0]['subject'], 'bnbjhb')
             # self.assertEqual(

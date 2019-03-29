@@ -54,6 +54,28 @@ class BaseTestCase(unittest.TestCase):
             content_type='application/json'
         )
 
+    def groupmessage(self,
+                     subject="welder",
+                     message="weldthem",
+                     status="sent"):
+        """
+        Method for sending group message
+        """
+        token = self.get_token()
+        self.create_a_group()
+        return self.client.post(
+            'api/v2/groups/1/messages',
+            data=json.dumps(dict(
+                subject=subject,
+                message=message,
+                status=status
+            )
+            ),
+            content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token
+            )
+            )
+
     def login_user(self, email, password):
         """
         Method for logging a user with dummy data
@@ -383,7 +405,7 @@ class BaseTestCase(unittest.TestCase):
         token = self.get_token()
         self.post_a_message()
         return self.client.get(
-            'api/v2/messages/1',  content_type='application/json',
+            'api/v2/messages/2',  content_type='application/json',
             headers=dict(Authorization='Bearer ' + token)
         )
 
@@ -399,6 +421,7 @@ class BaseTestCase(unittest.TestCase):
     def delete_a_particular_message(self):
         """Delete a particular message given message id"""
         token = self.get_token()
+        self.create_a_group()
         self.post_a_message()
         return self.client.delete(
             '/api/v2/messages/deleted/1',
@@ -502,6 +525,15 @@ class BaseTestCase(unittest.TestCase):
             '/api/v2/groups', content_type='application/json',
             headers=dict(Authorization='Bearer ' + token)
         )
+    
+    def fetch_unauth_groups(self):
+        """Method for testign fetch_all_groups"""
+        token = self.get_token()
+        # self.create_a_group()
+        return self.client.get(
+            '/api/v2/groups', content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
 
     def delete_a_group(self):
         """Delete a particular message given an invalid message id"""
@@ -511,6 +543,16 @@ class BaseTestCase(unittest.TestCase):
             '/api/v2/groupss/1',  content_type='application/json',
             headers=dict(Authorization='Bearer ' + token)
         )
+    
+    def delete_user_from_a_group(self):
+        """Delete a particular message given an invalid message id"""
+        token = self.get_token()
+        self.create_a_group()
+        return self.client.delete(
+            'api/v2/groups/1/users\1',  content_type='application/json',
+            headers=dict(Authorization='Bearer ' + token)
+        )
+
 
     def change_group_name(self, name="mothers"):
         """change group name"""

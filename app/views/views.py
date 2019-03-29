@@ -237,7 +237,7 @@ def get_particular_mail(message_id):
         })
     return jsonify({
         "status": 404,
-        "error": "that message_id is not in the system"})
+        "error": "message_id is not in the system"})
 
 
 @app.route('/api/v2/groups', methods=['POST'])

@@ -14,7 +14,7 @@ class Test_messages(BaseTestCase):
             data = json.loads(response.data)
             self.assertEqual(data['status'], 404)  
             self.assertEqual(data['error'],
-                             'that message_id is not in the system')
+                             'message_id is not in the system')
 
     def test_get_mail_with_invalid_mail_id(self):
         """
