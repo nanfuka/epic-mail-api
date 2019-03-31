@@ -19,7 +19,7 @@ class Mail(Database):
                 '{kwargs.get("lastname")}',
                 '{kwargs.get("email")}',
                 '{kwargs.get("password")}') RETURNING id,
-                firstname, lastname, email, password;"""
+                firstname, lastname, email;"""
         self.cursor.execute(insert)
         return self.cursor.fetchone()
 

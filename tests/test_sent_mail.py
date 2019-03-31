@@ -15,7 +15,7 @@ class Test_messages(BaseTestCase):
 
 #             self.assertEqual(response.status_code, 200)
             data = json.loads(response.data)
-            self.assertEqual(data['status'], 200)
+            self.assertEqual(data['status'], 404)
 
 #     def test_get_all_sent_mail_if_mail_list_is_empty(self):
 #         with self.client:

@@ -24,7 +24,7 @@ app = Flask(__name__)
 @swag_from('../apidocs/index.yml', methods=['GET'])
 def index():
     """route that returns the welcome note or index page"""
-    return "welcome to the Epic mail Application "
+    return jsonify({"message":"welcome to the Epic mail Application "})
 
 
 @app.route('/api/v2/auth/signup', methods=['POST'])
@@ -161,8 +161,10 @@ def create_message():
 def get_sent_mail():
     """Route which fetches all mail sent by the current user"""
     sender_id = get_id_from_header()
-    return jsonify({"status": 200,
-                    "data": mail.get_all_sent_mail_by_a_user(sender_id)})
+    if mail.get_all_sent_mail_by_a_user(sender_id):
+        return jsonify({"status": 200,
+                       "data": mail.get_all_sent_mail_by_a_user(sender_id)})
+    return jsonify({"status": 404, "error": "you have no sent mails"})
 
 
 @app.route('/api/v2/messages', methods=['GET'])
@@ -270,7 +272,7 @@ def fetch_groups():
     if all_groups:
         return jsonify({"status": 200, "data": all_groups})
     return jsonify({"status": 404,
-                    "message": "You have not yet created any groups"})
+                    "error": "You have not yet created any groups"})
 
 
 @app.route('/api/v2/groupss/<int:group_id>', methods=['DELETE'])
